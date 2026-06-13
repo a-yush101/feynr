@@ -81,7 +81,7 @@ export async function POST(request: Request) {
   const userMessage = `Topic: ${topic}\nDepth level: ${depthLevel}\nExplanation: ${explanation}\n\nRespond with a JSON object containing the keys \"claims\", \"gaps\", \"misconceptions\", and \"firstQuestion\". The \"firstQuestion\" should be a single focused Socratic follow-up question that targets a specific gap in the explanation. Return valid JSON only; code fences are allowed.`;
 
   try {
-    const responseText = await callGPT(ANALYZER_PROMPT, userMessage, 0.3);
+    const responseText = await callGPT(ANALYZER_PROMPT, userMessage, 0.3, 'json_object');
     const parsed = await parseAnalyzeResponse(responseText);
     return NextResponse.json(parsed);
   } catch (error) {

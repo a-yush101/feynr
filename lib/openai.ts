@@ -12,11 +12,13 @@ export async function callGPT(
   systemPrompt: string,
   userMessage: string,
   temperature = 0.7,
+  responseFormat: 'text' | 'json_object' = 'text'
 ): Promise<string> {
   try {
     const response = await client.chat.completions.create({
       model: MODEL_NAME,
       temperature,
+      ...(responseFormat === 'json_object' ? { response_format: { type: 'json_object' } } : {}),
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userMessage },

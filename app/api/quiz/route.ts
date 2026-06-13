@@ -103,7 +103,7 @@ export async function POST(request: Request) {
   const userMessage = `Topic: ${topic}\n\nUser's weak spots:\n- ${weakSpotsText}\n\nGenerate exactly 4 quiz questions that directly target these weak spots. Each question should be tailored to probe understanding of the specific gaps identified. For each question provide: question, type (either "mcq" or "short"), correct answer, and explanation. For MCQ questions, provide exactly 4 options. Return valid JSON only with a root "questions" key containing an array of question objects. Code fences are allowed.`;
 
   try {
-    const responseText = await callGPT(QUIZ_PROMPT, userMessage, 0.3);
+    const responseText = await callGPT(QUIZ_PROMPT, userMessage, 0.3, 'json_object');
     const parsed = await parseQuizResponse(responseText);
     return NextResponse.json(parsed);
   } catch (error) {

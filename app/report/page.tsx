@@ -142,12 +142,8 @@ export default function ReportPage() {
   if (!mounted) return null;
 
   return (
-    <div style={{ backgroundColor: 'var(--bg)', minHeight: '100vh' }}>
+    <div style={{ minHeight: '100vh' }}>
       <Navbar />
-      <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0, opacity: 0.3 }}>
-        <div style={{ position: 'absolute', top: '20%', right: '15%', width: 350, height: 350, background: 'radial-gradient(circle, rgba(176, 160, 216, 0.05) 0%, transparent 70%)', borderRadius: '50%', filter: 'blur(30px)' }} />
-        <div style={{ position: 'absolute', bottom: '20%', left: '15%', width: 300, height: 300, background: 'radial-gradient(circle, rgba(142, 207, 176, 0.05) 0%, transparent 70%)', borderRadius: '50%', filter: 'blur(30px)' }} />
-      </div>
 
       <div style={{ position: 'relative', zIndex: 1, paddingTop: 112, paddingBottom: 64, paddingLeft: 16, paddingRight: 16, maxWidth: 760, margin: '0 auto' }}>
         {/* Header */}
@@ -252,12 +248,12 @@ export default function ReportPage() {
               <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }}
                 style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 8 }}>
                 <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-                  <motion.button id="take-quiz-btn" onClick={handleTakeQuiz} whileHover={{ scale: 1.02, y: -2 }} whileTap={{ scale: 0.98 }}
-                    style={{ flex: 1, minWidth: 200, padding: '16px 0', borderRadius: 14, fontWeight: 800, fontSize: 16, border: 'none', cursor: 'pointer', fontFamily: 'inherit', backgroundColor: 'var(--blue)', color: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, boxShadow: '0 8px 24px rgba(139, 191, 212, 0.25)' }}>
+                  <motion.button id="take-quiz-btn" onClick={handleTakeQuiz} whileHover={{ scale: 1.02, backgroundColor: '#80cbc4', color: '#1a2e1a' }} whileTap={{ scale: 0.98 }}
+                    style={{ flex: 1, minWidth: 200, padding: '16px 0', borderRadius: 16, fontWeight: 800, fontSize: 16, border: '2px dashed #80cbc4', cursor: 'pointer', fontFamily: 'inherit', backgroundColor: 'rgba(0,0,0,0)', color: '#80cbc4', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, transition: 'all 0.2s' }}>
                     Take the Quiz <ChevronRight size={18} />
                   </motion.button>
-                  <motion.button id="start-over-btn" onClick={() => router.push('/')} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-                    style={{ padding: '16px 28px', borderRadius: 14, fontWeight: 700, fontSize: 15, border: '2px solid var(--border)', cursor: 'pointer', fontFamily: 'inherit', backgroundColor: 'var(--surface)', color: 'var(--chalk-dim)' }}>
+                  <motion.button id="start-over-btn" onClick={() => router.push('/')} whileHover={{ scale: 1.02, backgroundColor: 'rgba(245, 240, 232, 0.1)', color: '#f5f0e8' }} whileTap={{ scale: 0.98 }}
+                    style={{ padding: '16px 28px', borderRadius: 16, fontWeight: 700, fontSize: 15, border: '2px dashed var(--border)', cursor: 'pointer', fontFamily: 'inherit', backgroundColor: 'rgba(0,0,0,0)', color: 'var(--chalk-dim)', transition: 'all 0.2s' }}>
                     Start Over
                   </motion.button>
                 </div>

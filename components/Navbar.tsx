@@ -24,11 +24,11 @@ export default function Navbar() {
         <motion.div
           whileHover={{ rotate: -5, scale: 1.05 }}
           transition={{ type: 'spring', stiffness: 300, damping: 15 }}
-          className="w-8 h-8 rounded bg-[var(--surface-2)] border border-[var(--border)] flex items-center justify-center text-[var(--yellow)]"
+          className="w-8 h-8 rounded border-2 border-dashed border-[var(--border)] flex items-center justify-center text-[var(--yellow)] bg-[var(--surface-2)]"
         >
           <Brain size={18} />
         </motion.div>
-        <span className="text-[var(--chalk)] font-bold text-xl tracking-tight group-hover:text-[var(--chalk-dim)] transition-colors">
+        <span style={{ fontFamily: 'var(--font-chalk)', fontSize: '28px', transform: 'rotate(-2deg)' }} className="text-[var(--chalk)] font-bold tracking-tight group-hover:text-[var(--chalk-dim)] transition-colors">
           Feynr
         </span>
       </Link>
@@ -51,12 +51,12 @@ export default function Navbar() {
                 >
                   {/* Step dot */}
                   <div
-                    className={`relative w-[10px] h-[10px] rounded-full transition-all duration-300 ${
+                    className={`relative w-[12px] h-[12px] rounded-full border-2 transition-all duration-300 ${
                       isActive
-                        ? 'bg-[var(--blue)] shadow-[0_0_8px_var(--blue)] scale-110'
+                        ? 'border-[var(--blue)] bg-[var(--blue)] scale-110'
                         : isCompleted
-                          ? 'bg-[var(--blue)] opacity-60'
-                          : 'bg-[var(--chalk-dimmer)]'
+                          ? 'border-[var(--blue)] bg-[var(--blue)] opacity-60'
+                          : 'border-[var(--chalk-dimmer)] bg-transparent'
                     }`}
                   >
                   </div>
@@ -96,11 +96,12 @@ export default function Navbar() {
 
       {/* Right side pill */}
       <div
-        className={`text-xs font-bold px-4 py-1.5 rounded border transition-all ${
+        className={`text-xs font-bold px-4 py-1.5 rounded border-2 border-dashed transition-all ${
           currentIndex !== -1
-            ? 'bg-[var(--blue)]/10 border-[var(--blue)]/20 text-[var(--blue)]'
-            : 'bg-[var(--surface-2)] border-[var(--border)] text-[var(--chalk-dim)]'
+            ? 'bg-[var(--blue)]/10 border-[var(--blue)] text-[var(--blue)]'
+            : 'bg-transparent border-[var(--border)] text-[var(--chalk-dim)]'
         }`}
+        style={{ fontFamily: 'var(--font-chalk)', fontSize: 16 }}
       >
         {currentIndex !== -1 ? `Step ${currentIndex + 1} of 4` : 'AI Tutor'}
       </div>

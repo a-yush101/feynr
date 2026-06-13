@@ -132,14 +132,8 @@ export default function SessionPage() {
   if (!mounted) return null;
 
   return (
-    <div style={{ backgroundColor: 'var(--bg)', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Navbar />
-
-      {/* Ambient */}
-      <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0, opacity: 0.3 }}>
-        <div style={{ position: 'absolute', top: '30%', left: '15%', width: 350, height: 350, background: 'radial-gradient(circle, rgba(142, 207, 176, 0.04) 0%, transparent 60%)', borderRadius: '50%', filter: 'blur(40px)' }} />
-        <div style={{ position: 'absolute', bottom: '30%', right: '15%', width: 300, height: 300, background: 'radial-gradient(circle, rgba(224, 144, 128, 0.04) 0%, transparent 60%)', borderRadius: '50%', filter: 'blur(40px)' }} />
-      </div>
 
       {/* Topic info bar */}
       <div style={{ position: 'fixed', top: 72, left: 0, right: 0, zIndex: 40, display: 'flex', justifyContent: 'center', padding: '12px 16px' }}>
@@ -211,9 +205,9 @@ export default function SessionPage() {
                 <p style={{ fontFamily: 'var(--font-chalk)', color: 'var(--chalk-dim)', fontSize: 24, fontWeight: 500, marginBottom: 24, lineHeight: 1.4, transform: 'rotate(-1deg)' }}>
                   The AI has probed your understanding. Time to see your clarity report.
                 </p>
-                <motion.button id="view-report-btn" onClick={handleViewReport} whileHover={{ scale: 1.02, y: -2 }} whileTap={{ scale: 0.98 }}
-                  style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '16px 28px', borderRadius: 14, backgroundColor: 'var(--blue)', color: 'var(--bg)', fontWeight: 800, fontSize: 15, border: 'none', cursor: 'pointer', fontFamily: 'inherit', boxShadow: '0 8px 24px rgba(139, 191, 212, 0.25)' }}>
-                  View My Report <ChevronRight size={18} />
+                <motion.button id="view-report-btn" onClick={handleViewReport} whileHover={{ scale: 1.02, backgroundColor: '#80cbc4', color: '#1a2e1a' }} whileTap={{ scale: 0.98 }}
+                  style={{ width: '100%', padding: '16px 0', borderRadius: 14, fontWeight: 800, fontSize: 16, border: '2px dashed #80cbc4', cursor: 'pointer', fontFamily: 'inherit', backgroundColor: 'rgba(0,0,0,0)', color: '#80cbc4', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+                  View Clarity Report <ChevronRight size={18} />
                 </motion.button>
               </motion.div>
             )}
@@ -244,23 +238,25 @@ export default function SessionPage() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
+                onFocus={(e) => (e.target.style.borderColor = '#80cbc4')}
+                onBlur={(e) => (e.target.style.borderColor = 'var(--border)')}
                 placeholder="Type your answer… (Enter to send)"
                 disabled={isThinking}
                 aria-label="Your answer"
                 rows={1}
-                style={{ flex: 1, backgroundColor: 'transparent', color: 'var(--chalk)', resize: 'none', border: 'none', outline: 'none', fontSize: 15, fontWeight: 500, lineHeight: 1.6, maxHeight: 120, minHeight: 36, paddingTop: 6, fontFamily: 'inherit' }}
+                style={{ flex: 1, padding: '14px 20px', fontSize: 16, lineHeight: 1.5, color: 'var(--chalk)', backgroundColor: 'rgba(0,0,0,0)', border: '2px solid var(--border)', borderRadius: 16, resize: 'none', outline: 'none', minHeight: 52, maxHeight: 150, fontFamily: 'inherit', fontWeight: 500, overflowY: 'auto' }}
               />
               <motion.button
-                id="session-send-btn"
+                id="send-btn"
                 onClick={handleSend}
                 disabled={!input.trim() || isThinking}
-                whileHover={input.trim() && !isThinking ? { scale: 1.08 } : {}}
-                whileTap={input.trim() && !isThinking ? { scale: 0.92 } : {}}
+                whileHover={input.trim() && !isThinking ? { scale: 1.05, backgroundColor: '#fff176', color: '#1a2e1a' } : {}}
+                whileTap={input.trim() && !isThinking ? { scale: 0.95 } : {}}
                 aria-label="Send"
                 style={{
-                  width: 44, height: 44, borderRadius: 12, flexShrink: 0, border: 'none', cursor: input.trim() && !isThinking ? 'pointer' : 'not-allowed',
-                  backgroundColor: input.trim() && !isThinking ? '#e0d080' : '#212121',
-                  color: input.trim() && !isThinking ? '#0d0d0d' : 'rgba(232, 226, 212, 0.28)',
+                  width: 44, height: 44, borderRadius: 12, flexShrink: 0, border: input.trim() && !isThinking ? '2px dashed #fff176' : '2px dashed var(--border)', cursor: input.trim() && !isThinking ? 'pointer' : 'not-allowed',
+                  backgroundColor: 'rgba(0,0,0,0)',
+                  color: input.trim() && !isThinking ? '#fff176' : 'rgba(245, 240, 232, 0.3)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   transition: 'all 0.2s',
                 }}

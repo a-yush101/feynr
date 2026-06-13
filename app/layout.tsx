@@ -1,12 +1,11 @@
 import type { Metadata } from 'next';
-import { Nunito, Caveat } from 'next/font/google';
+import { Inter, Caveat, Permanent_Marker } from 'next/font/google';
 import './globals.css';
 
-const nunito = Nunito({
+const inter = Inter({
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700', '800', '900'],
   display: 'swap',
-  variable: '--font-nunito',
+  variable: '--font-inter',
 });
 
 const caveat = Caveat({
@@ -15,6 +14,14 @@ const caveat = Caveat({
   display: 'swap',
   variable: '--font-chalk',
 });
+
+const marker = Permanent_Marker({
+  subsets: ['latin'],
+  weight: ['400'],
+  display: 'swap',
+  variable: '--font-marker',
+});
+
 
 export const metadata: Metadata = {
   title: 'Feynr — Learn by Explaining',
@@ -26,8 +33,8 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${nunito.variable} ${caveat.variable} font-sans h-full`} data-scroll-behavior="smooth">
-      <body className="min-h-full flex flex-col" style={{ fontFamily: 'var(--font-nunito)' }}>{children}</body>
+    <html lang="en" className={`${inter.variable} ${caveat.variable} ${marker.variable} font-sans h-full`} data-scroll-behavior="smooth">
+      <body className="min-h-full flex flex-col" style={{ fontFamily: 'var(--font-inter)' }}>{children}</body>
     </html>
   );
 }

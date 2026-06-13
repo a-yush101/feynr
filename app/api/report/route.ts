@@ -160,7 +160,7 @@ export async function POST(request: Request) {
   const userMessage = `Topic: ${topic}\n\nExplanation: ${explanation}\n\nConversation history:\n${historyText}\n\nReturn a JSON object with keys: scores, misconceptions, nextSteps, and overallScore. Scores should contain numeric accuracy, depth, clarity, and completeness values from 0 to 100. Misconceptions should be a list of specific incorrect or misleading statements the user made. NextSteps should be exactly three actionable improvements. OverallScore should be the average of the four scores. Return valid JSON only; code fences are allowed.`;
 
   try {
-    const responseText = await callGPT(REPORT_PROMPT, userMessage, 0.3);
+    const responseText = await callGPT(REPORT_PROMPT, userMessage, 0.3, 'json_object');
     const parsed = await parseReportResponse(responseText);
     return NextResponse.json(parsed);
   } catch (error) {

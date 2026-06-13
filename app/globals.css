@@ -5,25 +5,23 @@
 /* ── Chalk on Blackboard Design System ── */
 :root {
   /* Backgrounds */
-  --bg:          #0d0d0d;
-  --surface:     #181818;
-  --surface-2:   #212121;
-  --border:      rgba(220, 215, 200, 0.1);
-  --border-soft: rgba(220, 215, 200, 0.06);
+  --bg:          #0a0a0f; /* Deep dark near black */
+  --surface:     rgba(245, 240, 232, 0.05);
+  --surface-2:   rgba(245, 240, 232, 0.08);
+  --border:      rgba(245, 240, 232, 0.3);
+  --border-soft: rgba(245, 240, 232, 0.15);
 
   /* Chalk text */
-  --chalk:        #e8e2d4;   /* warm off-white, like aged chalk */
-  --chalk-dim:    rgba(232, 226, 212, 0.55);
-  --chalk-dimmer: rgba(232, 226, 212, 0.28);
+  --chalk:        #f5f0e8;   /* slightly warm white */
+  --chalk-dim:    rgba(245, 240, 232, 0.6);
+  --chalk-dimmer: rgba(245, 240, 232, 0.3);
 
   /* Pastel chalk palette */
-  --blue:   #8bbfd4;   /* blue chalk  */
-  --green:  #8ecfb0;   /* green chalk */
-  --yellow: #e0d080;   /* yellow chalk */
-  --coral:  #e09080;   /* coral/red chalk */
-  --purple: #b0a0d8;   /* purple chalk */
-  --mint:   #8fccc0;   /* mint chalk */
-  --peach:  #e0b090;   /* peach chalk */
+  --blue:   #80cbc4;
+  --green:  #a5d6a7;
+  --yellow: #fff176;
+  --coral:  #ff8a80;
+  --purple: #b0a0d8;
 }
 
 *,
@@ -41,11 +39,36 @@ html {
 body {
   min-height: 100%;
   background-color: var(--bg);
+  /* SVG noise texture for chalk dust */
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.08'/%3E%3C/svg%3E");
   color: var(--chalk);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.65;
 }
+
+/* Subtle chalk-dust scrollbar */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(245, 240, 232, 0.15);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(245, 240, 232, 0.3);
+}
+
+::selection {
+  background: rgba(128, 203, 196, 0.25);
+  color: var(--chalk);
+}
+
+:focus-visible {
+  outline: 2px dashed rgba(245, 240, 232, 0.5);
+  outline-offset: 2px;
+}
+
+
 
 /* Subtle chalk-dust scrollbar */
 ::-webkit-scrollbar { width: 5px; }
