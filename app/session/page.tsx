@@ -44,7 +44,9 @@ export default function SessionPage() {
   const [shouldEnd, setShouldEnd] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [topic, setTopic] = useState('');
+  const [depthLevel, setDepthLevel] = useState('intermediate');
   const [conversationHistory, setConversationHistory] = useState<HistoryItem[]>([]);
+  const [questionCount, setQuestionCount] = useState(1);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -52,6 +54,7 @@ export default function SessionPage() {
     const session = getSession();
     if (!session?.topic || !session.messages?.length) { router.replace('/'); return; }
     setTopic(session.topic);
+    setDepthLevel(session.tags?.[0] ?? 'intermediate');
     const firstQ = session.messages.find((m) => m.role === 'assistant');
     if (firstQ) {
       setMessages([{ id: firstQ.id, role: 'assistant', content: firstQ.content }]);
@@ -80,7 +83,7 @@ export default function SessionPage() {
       const res = await fetch('/api/followup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ topic, conversationHistory: updatedHistory, userAnswer: trimmed }),
+        body: JSON.stringify({ topic, conversationHistory: updatedHistory, userAnswer: trimmed, questionCount, depthLevel }),
       });
       if (!res.ok) {
         const e = await res.json().catch(() => ({})) as { error?: string };
@@ -102,6 +105,7 @@ export default function SessionPage() {
         const newHistory: HistoryItem[] = [...updatedHistory, { role: 'assistant', content: data.nextQuestion }];
         setMessages((p) => [...p, aiMsg]);
         setConversationHistory(newHistory);
+        setQuestionCount((c) => c + 1);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong.');

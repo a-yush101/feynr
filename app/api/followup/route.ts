@@ -11,6 +11,8 @@ interface FollowupRequestBody {
   topic?: unknown;
   conversationHistory?: unknown;
   userAnswer?: unknown;
+  questionCount?: unknown;
+  depthLevel?: unknown;
 }
 
 interface FollowupResponseBody {
@@ -33,9 +35,26 @@ function isConversationHistory(value: unknown): value is ConversationMessage[] {
   );
 }
 
+/**
+ * Detect if the model wants to end the session.
+ * The model may return "END", "END.", "END - sufficient coverage", etc.
+ * We treat any response that STARTS with "END" (case-insensitive) as a session end signal.
+ */
+function detectShouldEnd(text: string): boolean {
+  const upper = text.trim().toUpperCase();
+  return (
+    upper === 'END' ||
+    upper.startsWith('END ') ||
+    upper.startsWith('END.') ||
+    upper.startsWith('END,') ||
+    upper.startsWith('END-') ||
+    upper.startsWith('END—')
+  );
+}
+
 export async function POST(request: Request) {
   const body: FollowupRequestBody = await request.json().catch(() => ({}));
-  const { topic, conversationHistory, userAnswer } = body;
+  const { topic, conversationHistory, userAnswer, questionCount, depthLevel } = body;
 
   if (!isString(topic) || !isConversationHistory(conversationHistory) || !isString(userAnswer)) {
     return NextResponse.json(
@@ -46,16 +65,37 @@ export async function POST(request: Request) {
     );
   }
 
+  // Count how many AI questions have been asked so far
+  const aiTurnCount =
+    typeof questionCount === 'number'
+      ? questionCount
+      : conversationHistory.filter((m) => m.role === 'assistant').length;
+
+  // Hard cap: force end after 5 questions regardless of model output
+  if (aiTurnCount >= 5) {
+    return NextResponse.json({ nextQuestion: null, shouldEnd: true });
+  }
+
   const historyText = conversationHistory
-    .map((message) => `${message.role}: ${message.content}`)
+    .map((message) => `${message.role === 'assistant' ? 'Tutor' : 'Student'}: ${message.content}`)
     .join('\n');
 
-  const userMessage = `Topic: ${topic}\n\nConversation history:\n${historyText}\n\nUser answer: ${userAnswer}\n\nBased on the full conversation so far, decide whether to ask one more focused Socratic follow-up question or to end the session. If you ask another question, return only the question text. If the session should end, return the word END. Use the context of prior questions and answers to determine whether the user has been probed thoroughly (around 3-5 total questions).`;
+  const level = isString(depthLevel) ? depthLevel : 'intermediate';
+
+  const userMessage = `Topic: ${topic}
+Learner level: ${level}
+
+Conversation so far (${aiTurnCount} tutor question(s) asked):
+${historyText}
+
+Student's latest answer: ${userAnswer}
+
+Using the learner level "${level}", decide: ask one more conversational question appropriate for that level, or return END. Remember: end after 3-5 exchanges, or sooner if understanding is clear.`;
 
   try {
-    const responseText = await callGPT(SOCRATIC_PROMPT, userMessage, 0.3);
+    const responseText = await callGPT(SOCRATIC_PROMPT, userMessage, 0.4);
     const trimmed = responseText.trim();
-    const shouldEnd = /^END$/i.test(trimmed);
+    const shouldEnd = detectShouldEnd(trimmed);
     const nextQuestion = shouldEnd ? null : trimmed;
 
     const payload: FollowupResponseBody = {
