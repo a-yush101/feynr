@@ -1,65 +1,237 @@
-import Image from "next/image";
+'use client';
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
+import { Sparkles } from 'lucide-react';
+import { setSession } from '@/lib/storage';
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1, delayChildren: 0.1 },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 24 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+};
 
 export default function Home() {
+  const router = useRouter();
+  const [topic, setTopic] = useState('');
+  const [depthLevel, setDepthLevel] = useState<'beginner' | 'intermediate' | 'advanced'>('intermediate');
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleStart = async () => {
+    if (!topic.trim()) return;
+    setIsLoading(true);
+    try {
+      const sessionId = `session_${Date.now()}`;
+      setSession({
+        sessionId,
+        userId: undefined,
+        topic,
+        step: 'explain',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        messages: [],
+        clarityScore: undefined,
+        tags: [depthLevel],
+      });
+      router.push('/explain');
+    } catch (error) {
+      console.error('Failed to start session:', error);
+      setIsLoading(false);
+    }
+  };
+
+  const isButtonDisabled = !topic.trim() || isLoading;
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <div
+      style={{ backgroundColor: '#0a0a0f', minHeight: '100vh' }}
+      className="overflow-hidden flex items-center justify-center px-4 relative"
+    >
+      {/* Ambient blobs */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div
+          style={{
+            position: 'absolute', top: '10%', left: '5%',
+            width: 500, height: 500,
+            background: 'radial-gradient(circle, rgba(30,58,95,0.25) 0%, transparent 70%)',
+            borderRadius: '50%',
+          }}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+        <div
+          style={{
+            position: 'absolute', bottom: '10%', right: '5%',
+            width: 400, height: 400,
+            background: 'radial-gradient(circle, rgba(249,115,22,0.12) 0%, transparent 70%)',
+            borderRadius: '50%',
+          }}
+        />
+      </div>
+
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        style={{ position: 'relative', zIndex: 10, width: '100%', maxWidth: 640 }}
+      >
+        {/* Badge */}
+        <motion.div variants={itemVariants} style={{ display: 'flex', justifyContent: 'center', marginBottom: 32 }}>
+          <div
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 8,
+              padding: '8px 16px', borderRadius: 9999,
+              backgroundColor: '#111118', border: '1px solid rgba(255,255,255,0.1)',
+            }}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+            <motion.div
+              animate={{ opacity: [1, 0.4, 1] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#f97316' }}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            <span style={{ fontSize: 13, fontWeight: 500, color: 'rgba(255,255,255,0.8)' }}>
+              Feynman Technique — Reimagined
+            </span>
+          </div>
+        </motion.div>
+
+        {/* Hero */}
+        <motion.div variants={itemVariants} style={{ textAlign: 'center', marginBottom: 40 }}>
+          <h1 style={{ fontSize: 'clamp(2.5rem, 8vw, 4.5rem)', fontWeight: 800, lineHeight: 1.1, marginBottom: 16 }}>
+            <span style={{ color: '#fff' }}>Explain it.</span>
+            <br />
+            <span style={{ color: '#fff' }}>Understand it.</span>
+            <br />
+            <span style={{ background: 'linear-gradient(135deg, #f97316, #fbbf24)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+              Own it.
+            </span>
+          </h1>
+          <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.55)', maxWidth: 480, margin: '0 auto', lineHeight: 1.7 }}>
+            Teach a concept to an AI. Get Socratic follow-up questions. Discover exactly what you don't know.
+          </p>
+        </motion.div>
+
+        {/* Card */}
+        <motion.div
+          variants={itemVariants}
+          style={{
+            padding: '32px',
+            borderRadius: 20,
+            backgroundColor: '#111118',
+            border: '1px solid rgba(255,255,255,0.1)',
+            marginBottom: 32,
+            boxShadow: '0 25px 50px rgba(0,0,0,0.5)',
+          }}
+        >
+          <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: 'rgba(255,255,255,0.5)', marginBottom: 10 }}>
+            What do you want to explain?
+          </label>
+          <input
+            id="topic-input"
+            type="text"
+            value={topic}
+            onChange={(e) => setTopic(e.target.value)}
+            onKeyDown={(e) => { if (e.key === 'Enter' && !isButtonDisabled) handleStart(); }}
+            placeholder="e.g., Quantum entanglement, Photosynthesis, Machine learning..."
+            style={{
+              width: '100%', padding: '12px 16px', borderRadius: 12,
+              backgroundColor: 'rgba(255,255,255,0.05)',
+              border: '1px solid rgba(255,255,255,0.12)',
+              color: '#fff', fontSize: 15, outline: 'none',
+              marginBottom: 24, boxSizing: 'border-box',
+              fontFamily: 'inherit',
+            }}
+          />
+
+          {/* Depth selector */}
+          <div style={{ marginBottom: 24 }}>
+            <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: 'rgba(255,255,255,0.5)', marginBottom: 10 }}>
+              Understanding level
+            </label>
+            <div style={{ display: 'flex', gap: 10 }}>
+              {(['beginner', 'intermediate', 'advanced'] as const).map((level) => (
+                <motion.button
+                  key={level}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setDepthLevel(level)}
+                  id={`depth-${level}`}
+                  style={{
+                    flex: 1, padding: '10px 0', borderRadius: 10, fontWeight: 600,
+                    fontSize: 13, cursor: 'pointer', border: 'none', fontFamily: 'inherit',
+                    backgroundColor: depthLevel === level ? '#f97316' : 'rgba(255,255,255,0.07)',
+                    color: depthLevel === level ? '#fff' : 'rgba(255,255,255,0.45)',
+                    transition: 'all 0.2s',
+                  }}
+                >
+                  {level.charAt(0).toUpperCase() + level.slice(1)}
+                </motion.button>
+              ))}
+            </div>
+          </div>
+
+          {/* Start button */}
+          <motion.button
+            id="start-btn"
+            onClick={handleStart}
+            disabled={isButtonDisabled}
+            whileHover={!isButtonDisabled ? { scale: 1.02, y: -2 } : {}}
+            whileTap={!isButtonDisabled ? { scale: 0.98 } : {}}
+            style={{
+              width: '100%', padding: '14px 0', borderRadius: 12,
+              fontWeight: 700, fontSize: 15, cursor: isButtonDisabled ? 'not-allowed' : 'pointer',
+              border: 'none', fontFamily: 'inherit',
+              background: isButtonDisabled
+                ? 'rgba(255,255,255,0.08)'
+                : 'linear-gradient(135deg, #1e3a5f 0%, #f97316 100%)',
+              color: isButtonDisabled ? 'rgba(255,255,255,0.3)' : '#fff',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+              boxShadow: isButtonDisabled ? 'none' : '0 8px 24px rgba(249,115,22,0.25)',
+              transition: 'all 0.2s',
+            }}
           >
-            Documentation
-          </a>
-        </div>
-      </main>
+            {isLoading ? (
+              <>
+                <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}>
+                  <Sparkles size={18} />
+                </motion.div>
+                Starting…
+              </>
+            ) : (
+              <>Start Explaining <span style={{ fontSize: 18 }}>→</span></>
+            )}
+          </motion.button>
+        </motion.div>
+
+        {/* Feature pills */}
+        <motion.div variants={itemVariants} style={{ display: 'flex', flexWrap: 'wrap', gap: 10, justifyContent: 'center' }}>
+          {[
+            { icon: '🎯', text: 'Gap Detection' },
+            { icon: '🧠', text: 'Socratic Probing' },
+            { icon: '📊', text: 'Clarity Report' },
+            { icon: '🧩', text: 'Adaptive Quiz' },
+          ].map((feature, idx) => (
+            <motion.div
+              key={idx}
+              whileHover={{ scale: 1.05 }}
+              style={{
+                padding: '8px 16px', borderRadius: 9999,
+                backgroundColor: '#111118', border: '1px solid rgba(255,255,255,0.08)',
+                fontSize: 13, color: 'rgba(255,255,255,0.6)', cursor: 'default',
+              }}
+            >
+              <span style={{ marginRight: 6 }}>{feature.icon}</span>
+              {feature.text}
+            </motion.div>
+          ))}
+        </motion.div>
+      </motion.div>
     </div>
   );
 }
