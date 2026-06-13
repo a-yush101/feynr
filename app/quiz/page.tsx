@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { AlertCircle, CheckCircle2, XCircle, ChevronRight, RotateCcw, Trophy } from 'lucide-react';
+import { AlertCircle, CheckCircle2, XCircle, ChevronRight, RotateCcw, Trophy, PartyPopper, ThumbsUp, BookOpen } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import { getSession } from '@/lib/storage';
 
@@ -95,27 +95,27 @@ export default function QuizPage() {
   if (!mounted) return null;
 
   return (
-    <div style={{ backgroundColor: '#0a0a0f', minHeight: '100vh' }}>
+    <div style={{ backgroundColor: 'var(--bg)', minHeight: '100vh' }}>
       <Navbar />
-      <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0 }}>
-        <div style={{ position: 'absolute', top: '25%', left: '20%', width: 350, height: 350, background: 'radial-gradient(circle, rgba(16,185,129,0.07) 0%, transparent 70%)', borderRadius: '50%' }} />
-        <div style={{ position: 'absolute', bottom: '25%', right: '20%', width: 300, height: 300, background: 'radial-gradient(circle, rgba(249,115,22,0.07) 0%, transparent 70%)', borderRadius: '50%' }} />
+      <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0, opacity: 0.3 }}>
+        <div style={{ position: 'absolute', top: '25%', left: '20%', width: 350, height: 350, background: 'radial-gradient(circle, rgba(142, 207, 176, 0.05) 0%, transparent 70%)', borderRadius: '50%', filter: 'blur(30px)' }} />
+        <div style={{ position: 'absolute', bottom: '25%', right: '20%', width: 300, height: 300, background: 'radial-gradient(circle, rgba(224, 208, 128, 0.05) 0%, transparent 70%)', borderRadius: '50%', filter: 'blur(30px)' }} />
       </div>
 
       <div style={{ position: 'relative', zIndex: 1, paddingTop: 112, paddingBottom: 64, paddingLeft: 16, paddingRight: 16, maxWidth: 680, margin: '0 auto' }}>
         {/* Header */}
         <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} style={{ marginBottom: 32 }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 9999, backgroundColor: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.25)', marginBottom: 12 }}>
-            <Trophy size={11} style={{ color: '#34d399' }} />
-            <span style={{ fontSize: 11, fontWeight: 600, color: 'rgba(52,211,153,0.8)' }}>Adaptive Quiz</span>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 14px', borderRadius: 9999, backgroundColor: 'var(--surface)', border: '1px solid var(--border)', marginBottom: 12 }}>
+            <Trophy size={14} style={{ color: 'var(--yellow)' }} />
+            <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--chalk-dim)' }}>Adaptive Quiz</span>
           </div>
-          <h1 style={{ fontSize: 'clamp(1.8rem, 5vw, 2.6rem)', fontWeight: 800, color: '#fff', marginBottom: 8, lineHeight: 1.2 }}>
+          <h1 style={{ fontFamily: 'var(--font-chalk)', fontSize: 'clamp(3rem, 7vw, 4.5rem)', fontWeight: 700, color: 'var(--chalk)', marginBottom: 8, lineHeight: 1.1, transform: 'rotate(-1deg)' }}>
             Quiz on{' '}
-            <span style={{ background: 'linear-gradient(135deg, #f97316, #fbbf24)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            <span style={{ color: 'var(--yellow)' }}>
               {topic}
             </span>
           </h1>
-          <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)' }}>Targeted at your weak spots from the Socratic session.</p>
+          <p style={{ fontFamily: 'var(--font-chalk)', fontSize: 24, color: 'var(--chalk-dim)', fontWeight: 500, transform: 'rotate(-1deg)' }}>Targeted at your weak spots from the Socratic session.</p>
         </motion.div>
 
         <AnimatePresence mode="wait">
@@ -123,14 +123,14 @@ export default function QuizPage() {
           {isLoading && (
             <motion.div key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20, padding: '64px 0' }}>
-              <div style={{ width: 56, height: 56, borderRadius: 16, background: 'linear-gradient(135deg, #1e3a5f, #f97316)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ width: 64, height: 64, borderRadius: 20, backgroundColor: 'var(--surface)', border: '2px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <motion.div animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}>
-                  <Trophy size={24} color="#fff" />
+                  <Trophy size={28} color="var(--yellow)" />
                 </motion.div>
               </div>
               <div style={{ textAlign: 'center' }}>
-                <p style={{ color: 'rgba(255,255,255,0.6)', fontWeight: 600, marginBottom: 4 }}>Generating your quiz…</p>
-                <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: 13 }}>Tailored to your specific gaps</p>
+                <p style={{ color: 'var(--chalk)', fontWeight: 800, fontSize: 16, marginBottom: 4 }}>Writing questions…</p>
+                <p style={{ color: 'var(--chalk-dim)', fontSize: 14, fontWeight: 600 }}>Tailored to your specific gaps</p>
               </div>
             </motion.div>
           )}
@@ -139,10 +139,10 @@ export default function QuizPage() {
           {error && !isLoading && (
             <motion.div key="error" initial={{ opacity: 0 }} animate={{ opacity: 1 }}
               style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, padding: '64px 0' }}>
-              <div style={{ display: 'flex', gap: 10, padding: '14px 16px', borderRadius: 12, backgroundColor: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', color: '#fca5a5', fontSize: 14 }}>
-                <AlertCircle size={16} style={{ flexShrink: 0, marginTop: 2 }} /> {error}
+              <div style={{ display: 'flex', gap: 10, padding: '14px 16px', borderRadius: 12, backgroundColor: 'rgba(224, 144, 128, 0.1)', border: '2px solid rgba(224, 144, 128, 0.2)', color: 'var(--coral)', fontSize: 14, fontWeight: 600 }}>
+                <AlertCircle size={18} style={{ flexShrink: 0, marginTop: 2 }} /> {error}
               </div>
-              <button onClick={() => router.push('/report')} style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)', background: 'none', border: 'none', cursor: 'pointer' }}>
+              <button onClick={() => router.push('/report')} style={{ fontSize: 14, fontWeight: 700, color: 'var(--chalk-dim)', background: 'none', border: 'none', cursor: 'pointer' }}>
                 ← Back to report
               </button>
             </motion.div>
@@ -152,43 +152,45 @@ export default function QuizPage() {
           {finished && (
             <motion.div key="finished" initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }}
               style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 24, paddingTop: 16 }}>
-              <div style={{ fontSize: 56 }}>{pct >= 75 ? '🎉' : pct >= 50 ? '👍' : '📚'}</div>
+              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 8 }}>
+                {pct >= 75 ? <PartyPopper size={64} style={{ color: '#8ecfb0' }} /> : pct >= 50 ? <ThumbsUp size={64} style={{ color: '#e0d080' }} /> : <BookOpen size={64} style={{ color: '#e09080' }} />}
+              </div>
               <div style={{ textAlign: 'center' }}>
-                <h2 style={{ fontSize: 32, fontWeight: 800, color: '#fff', marginBottom: 6 }}>{score} / {total} correct</h2>
-                <p style={{ fontSize: 18, fontWeight: 700, color: pct >= 75 ? '#10b981' : pct >= 50 ? '#f59e0b' : '#ef4444' }}>
+                <h2 style={{ fontFamily: 'var(--font-chalk)', fontSize: 44, fontWeight: 700, color: 'var(--chalk)', marginBottom: 6, transform: 'rotate(-2deg)' }}>{score} / {total} correct</h2>
+                <p style={{ fontFamily: 'var(--font-chalk)', fontSize: 28, fontWeight: 700, color: pct >= 75 ? 'var(--green)' : pct >= 50 ? 'var(--yellow)' : 'var(--coral)', transform: 'rotate(-1deg)' }}>
                   {pct}% — {pct >= 75 ? 'Excellent!' : pct >= 50 ? 'Good effort!' : 'Keep studying!'}
                 </p>
               </div>
 
               {/* Review */}
-              <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 16 }}>
                 {questions.map((q, i) => {
                   const ans = answers[i];
                   return (
-                    <div key={i} style={{ padding: '16px 18px', borderRadius: 16, backgroundColor: '#111118', border: `1px solid ${ans?.isCorrect ? 'rgba(16,185,129,0.2)' : 'rgba(239,68,68,0.2)'}` }}>
-                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 8 }}>
-                        {ans?.isCorrect ? <CheckCircle2 size={15} style={{ color: '#10b981', marginTop: 2, flexShrink: 0 }} /> : <XCircle size={15} style={{ color: '#ef4444', marginTop: 2, flexShrink: 0 }} />}
-                        <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.8)', fontWeight: 600 }}>{q.question}</p>
+                    <div key={i} style={{ padding: '20px', borderRadius: 20, backgroundColor: 'var(--surface)', border: `2px solid ${ans?.isCorrect ? 'rgba(142, 207, 176, 0.3)' : 'rgba(224, 144, 128, 0.3)'}` }}>
+                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 12 }}>
+                        {ans?.isCorrect ? <CheckCircle2 size={18} style={{ color: 'var(--green)', marginTop: 2, flexShrink: 0 }} /> : <XCircle size={18} style={{ color: 'var(--coral)', marginTop: 2, flexShrink: 0 }} />}
+                        <p style={{ fontSize: 16, color: 'var(--chalk)', fontWeight: 700 }}>{q.question}</p>
                       </div>
                       {!ans?.isCorrect && (
-                        <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginLeft: 25 }}>
-                          Correct: <span style={{ color: 'rgba(255,255,255,0.6)' }}>{q.correct ?? q.answer}</span>
+                        <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--chalk-dim)', marginLeft: 30 }}>
+                          Correct: <span style={{ color: 'var(--green)' }}>{q.correct ?? q.answer}</span>
                         </p>
                       )}
-                      <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginLeft: 25, marginTop: 4, lineHeight: 1.6 }}>{q.explanation}</p>
+                      <p style={{ fontSize: 14, color: 'var(--chalk-dim)', marginLeft: 30, marginTop: 6, lineHeight: 1.6, fontWeight: 600 }}>{q.explanation}</p>
                     </div>
                   );
                 })}
               </div>
 
-              <div style={{ display: 'flex', gap: 12, width: '100%', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', gap: 16, width: '100%', flexWrap: 'wrap', marginTop: 8 }}>
                 <motion.button id="quiz-restart-btn" onClick={handleRestart} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-                  style={{ flex: 1, minWidth: 140, padding: '14px 0', borderRadius: 12, fontWeight: 600, fontSize: 14, border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer', fontFamily: 'inherit', backgroundColor: '#111118', color: 'rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-                  <RotateCcw size={14} /> Retry Quiz
+                  style={{ flex: 1, minWidth: 160, padding: '16px 0', borderRadius: 14, fontWeight: 800, fontSize: 16, border: '2px solid var(--border)', cursor: 'pointer', fontFamily: 'inherit', backgroundColor: 'var(--surface)', color: 'var(--chalk-dim)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+                  <RotateCcw size={16} /> Retry Quiz
                 </motion.button>
-                <motion.button id="quiz-home-btn" onClick={() => router.push('/')} whileHover={{ scale: 1.02, y: -1 }} whileTap={{ scale: 0.98 }}
-                  style={{ flex: 1, minWidth: 140, padding: '14px 0', borderRadius: 12, fontWeight: 700, fontSize: 14, border: 'none', cursor: 'pointer', fontFamily: 'inherit', background: 'linear-gradient(135deg, #1e3a5f, #f97316)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, boxShadow: '0 8px 24px rgba(249,115,22,0.25)' }}>
-                  Learn Something New <ChevronRight size={16} />
+                <motion.button id="quiz-home-btn" onClick={() => router.push('/')} whileHover={{ scale: 1.02, y: -2 }} whileTap={{ scale: 0.98 }}
+                  style={{ flex: 1, minWidth: 160, padding: '16px 0', borderRadius: 14, fontWeight: 800, fontSize: 16, border: 'none', cursor: 'pointer', fontFamily: 'inherit', backgroundColor: 'var(--blue)', color: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, boxShadow: '0 8px 24px rgba(139, 191, 212, 0.25)' }}>
+                  Learn Something New <ChevronRight size={18} />
                 </motion.button>
               </div>
             </motion.div>
@@ -196,16 +198,16 @@ export default function QuizPage() {
 
           {/* Active quiz */}
           {!isLoading && !error && !finished && questions.length > 0 && (
-            <motion.div key={`quiz-${currentIndex}`} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+            <motion.div key={`quiz-${currentIndex}`} style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
               {/* Progress */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: 'rgba(255,255,255,0.35)' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, fontWeight: 700, color: 'var(--chalk-dim)' }}>
                   <span>Question {currentIndex + 1} of {total}</span>
                   <span>{score} correct</span>
                 </div>
-                <div style={{ height: 4, width: '100%', borderRadius: 9999, backgroundColor: 'rgba(255,255,255,0.06)' }}>
+                <div style={{ height: 6, width: '100%', borderRadius: 9999, backgroundColor: 'var(--surface-2)' }}>
                   <motion.div
-                    style={{ height: '100%', borderRadius: 9999, background: 'linear-gradient(90deg, #1e3a5f, #f97316)' }}
+                    style={{ height: '100%', borderRadius: 9999, backgroundColor: '#8bbfd4' }}
                     animate={{ width: `${(currentIndex / total) * 100}%` }}
                     transition={{ duration: 0.4 }}
                   />
@@ -215,30 +217,30 @@ export default function QuizPage() {
               {/* Question card */}
               <AnimatePresence mode="wait">
                 <motion.div key={currentIndex}
-                  initial={{ x: 60, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -60, opacity: 0 }}
+                  initial={{ x: 40, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -40, opacity: 0 }}
                   transition={{ duration: 0.3 }}
-                  style={{ padding: '24px', borderRadius: 20, backgroundColor: '#111118', border: '1px solid rgba(255,255,255,0.1)' }}>
-                  <div style={{ display: 'inline-flex', alignItems: 'center', padding: '4px 10px', borderRadius: 9999, backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', marginBottom: 16 }}>
-                    <span style={{ fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                  style={{ padding: '28px', borderRadius: 24, backgroundColor: 'var(--surface)', border: '2px solid var(--border)' }}>
+                  <div style={{ display: 'inline-flex', alignItems: 'center', padding: '6px 12px', borderRadius: 8, backgroundColor: 'var(--surface-2)', marginBottom: 20 }}>
+                    <span style={{ fontSize: 11, fontWeight: 800, color: 'var(--chalk-dim)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                       {currentQ.type === 'mcq' ? 'Multiple Choice' : 'Short Answer'}
                     </span>
                   </div>
-                  <p style={{ fontSize: 17, color: '#fff', fontWeight: 600, lineHeight: 1.55 }}>{currentQ.question}</p>
+                  <p style={{ fontSize: 19, color: 'var(--chalk)', fontWeight: 800, lineHeight: 1.5 }}>{currentQ.question}</p>
                 </motion.div>
               </AnimatePresence>
 
               {/* MCQ options */}
               {currentQ.type === 'mcq' && currentQ.options && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                   {currentQ.options.map((opt, i) => {
                     const isSelected = currentAnswer?.selected === opt;
                     const isCorrectOpt = opt.trim().toLowerCase() === correctAnswer.trim().toLowerCase();
 
-                    let bg = '#111118', border = 'rgba(255,255,255,0.1)', color = 'rgba(255,255,255,0.7)';
+                    let bg = '#181818', border = 'rgba(220, 215, 200, 0.1)', color = '#e8e2d4';
                     if (revealed) {
-                      if (isCorrectOpt) { bg = 'rgba(16,185,129,0.1)'; border = 'rgba(16,185,129,0.35)'; color = '#6ee7b7'; }
-                      else if (isSelected) { bg = 'rgba(239,68,68,0.1)'; border = 'rgba(239,68,68,0.35)'; color = '#fca5a5'; }
-                      else { color = 'rgba(255,255,255,0.3)'; }
+                      if (isCorrectOpt) { bg = 'rgba(142, 207, 176, 0.15)'; border = '#8ecfb0'; color = '#8ecfb0'; }
+                      else if (isSelected) { bg = 'rgba(224, 144, 128, 0.15)'; border = '#e09080'; color = '#e09080'; }
+                      else { color = 'rgba(232, 226, 212, 0.28)'; }
                     }
 
                     return (
@@ -246,23 +248,23 @@ export default function QuizPage() {
                         key={i}
                         id={`quiz-option-${i}`}
                         onClick={() => handleSelectOption(opt)}
-                        whileHover={!revealed ? { scale: 1.01, x: 4 } : {}}
+                        whileHover={!revealed ? { scale: 1.01, backgroundColor: '#212121' } : {}}
                         whileTap={!revealed ? { scale: 0.99 } : {}}
                         disabled={revealed}
                         aria-label={`Option ${String.fromCharCode(65 + i)}: ${opt}`}
                         style={{
-                          width: '100%', textAlign: 'left', padding: '14px 18px', borderRadius: 14,
-                          border: `1px solid ${border}`, backgroundColor: bg, color, fontSize: 14, fontWeight: 500,
+                          width: '100%', textAlign: 'left', padding: '16px 20px', borderRadius: 16,
+                          border: `2px solid ${border}`, backgroundColor: bg, color, fontSize: 15, fontWeight: 700,
                           cursor: revealed ? 'default' : 'pointer', fontFamily: 'inherit',
-                          display: 'flex', alignItems: 'center', gap: 12, transition: 'all 0.15s',
+                          display: 'flex', alignItems: 'center', gap: 16, transition: 'all 0.15s',
                         }}
                       >
-                        <span style={{ width: 26, height: 26, borderRadius: '50%', border: `1px solid currentColor`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, flexShrink: 0, opacity: 0.7 }}>
+                        <span style={{ width: 28, height: 28, borderRadius: 8, backgroundColor: 'var(--surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 900, flexShrink: 0, color: 'var(--chalk-dim)' }}>
                           {String.fromCharCode(65 + i)}
                         </span>
                         <span style={{ flex: 1 }}>{opt}</span>
-                        {revealed && isCorrectOpt && <CheckCircle2 size={16} style={{ color: '#10b981', flexShrink: 0 }} />}
-                        {revealed && isSelected && !isCorrectOpt && <XCircle size={16} style={{ color: '#ef4444', flexShrink: 0 }} />}
+                        {revealed && isCorrectOpt && <CheckCircle2 size={20} style={{ color: 'var(--green)', flexShrink: 0 }} />}
+                        {revealed && isSelected && !isCorrectOpt && <XCircle size={20} style={{ color: 'var(--coral)', flexShrink: 0 }} />}
                       </motion.button>
                     );
                   })}
@@ -273,11 +275,11 @@ export default function QuizPage() {
               <AnimatePresence>
                 {revealed && (
                   <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-                    style={{ padding: '16px 20px', borderRadius: 14, backgroundColor: '#111118', border: `1px solid ${currentAnswer?.isCorrect ? 'rgba(16,185,129,0.2)' : 'rgba(245,158,11,0.2)'}` }}>
-                    <p style={{ fontWeight: 700, color: '#fff', marginBottom: 6 }}>
+                    style={{ padding: '20px 24px', borderRadius: 16, backgroundColor: 'var(--surface)', border: `2px solid ${currentAnswer?.isCorrect ? 'var(--green)' : 'var(--coral)'}` }}>
+                    <p style={{ fontWeight: 900, fontSize: 16, color: currentAnswer?.isCorrect ? 'var(--green)' : 'var(--coral)', marginBottom: 8 }}>
                       {currentAnswer?.isCorrect ? '✓ Correct!' : '✗ Not quite'}
                     </p>
-                    <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', lineHeight: 1.65 }}>{currentQ.explanation}</p>
+                    <p style={{ fontSize: 15, color: 'var(--chalk-dim)', lineHeight: 1.6, fontWeight: 600 }}>{currentQ.explanation}</p>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -285,8 +287,8 @@ export default function QuizPage() {
               {/* Next button */}
               {revealed && (
                 <motion.button id="quiz-next-btn" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} onClick={handleNext}
-                  whileHover={{ scale: 1.02, y: -1 }} whileTap={{ scale: 0.98 }}
-                  style={{ width: '100%', padding: '16px 0', borderRadius: 14, fontWeight: 700, fontSize: 15, border: 'none', cursor: 'pointer', fontFamily: 'inherit', background: 'linear-gradient(135deg, #1e3a5f, #f97316)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, boxShadow: '0 8px 24px rgba(249,115,22,0.25)' }}>
+                  whileHover={{ scale: 1.02, y: -2 }} whileTap={{ scale: 0.98 }}
+                  style={{ width: '100%', padding: '18px 0', borderRadius: 16, fontWeight: 800, fontSize: 16, border: 'none', cursor: 'pointer', fontFamily: 'inherit', backgroundColor: 'var(--blue)', color: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, boxShadow: '0 8px 24px rgba(139, 191, 212, 0.25)', marginTop: 8 }}>
                   {currentIndex < total - 1 ? (<>Next Question <ChevronRight size={18} /></>) : (<>See Results <Trophy size={18} /></>)}
                 </motion.button>
               )}

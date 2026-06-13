@@ -18,17 +18,17 @@ export default function Navbar() {
   const currentIndex = STEPS.findIndex((s) => pathname.startsWith(s.path));
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 border-b border-white/[0.06] bg-[#0a0a0f]/80 backdrop-blur-xl">
+    <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 border-b border-[var(--border)] bg-[var(--bg)]/90 backdrop-blur-md">
       {/* Logo */}
-      <Link href="/" className="flex items-center gap-2 group" id="nav-logo">
+      <Link href="/" className="flex items-center gap-3 group" id="nav-logo">
         <motion.div
-          whileHover={{ rotate: 10, scale: 1.05 }}
+          whileHover={{ rotate: -5, scale: 1.05 }}
           transition={{ type: 'spring', stiffness: 300, damping: 15 }}
-          className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#1e3a5f] to-[#f97316] flex items-center justify-center"
+          className="w-8 h-8 rounded bg-[var(--surface-2)] border border-[var(--border)] flex items-center justify-center text-[var(--yellow)]"
         >
-          <Brain size={16} className="text-white" />
+          <Brain size={18} />
         </motion.div>
-        <span className="text-white font-bold text-lg tracking-tight group-hover:text-white/80 transition-colors">
+        <span className="text-[var(--chalk)] font-bold text-xl tracking-tight group-hover:text-[var(--chalk-dim)] transition-colors">
           Feynr
         </span>
       </Link>
@@ -42,7 +42,7 @@ export default function Navbar() {
             const isFuture = i > currentIndex;
 
             return (
-              <div key={step.path} className="flex items-center">
+               <div key={step.path} className="flex items-center">
                 <motion.div
                   initial={{ opacity: 0, y: -6 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -51,30 +51,23 @@ export default function Navbar() {
                 >
                   {/* Step dot */}
                   <div
-                    className={`relative w-2 h-2 rounded-full transition-all duration-300 ${
+                    className={`relative w-[10px] h-[10px] rounded-full transition-all duration-300 ${
                       isActive
-                        ? 'bg-[#f97316] shadow-lg shadow-orange-500/40 scale-125'
+                        ? 'bg-[var(--blue)] shadow-[0_0_8px_var(--blue)] scale-110'
                         : isCompleted
-                          ? 'bg-[#f97316]/60'
-                          : 'bg-white/20'
+                          ? 'bg-[var(--blue)] opacity-60'
+                          : 'bg-[var(--chalk-dimmer)]'
                     }`}
                   >
-                    {isActive && (
-                      <motion.div
-                        className="absolute inset-0 rounded-full bg-[#f97316]"
-                        animate={{ scale: [1, 1.8, 1], opacity: [1, 0, 1] }}
-                        transition={{ duration: 2, repeat: Infinity }}
-                      />
-                    )}
                   </div>
                   {/* Step label */}
                   <span
-                    className={`mt-1 text-[10px] font-medium tracking-wide transition-colors ${
+                    className={`mt-1.5 text-[10px] font-bold tracking-wide transition-colors ${
                       isActive
-                        ? 'text-[#f97316]'
+                        ? 'text-[var(--blue)]'
                         : isCompleted
-                          ? 'text-white/50'
-                          : 'text-white/20'
+                          ? 'text-[var(--chalk-dim)]'
+                          : 'text-[var(--chalk-dimmer)]'
                     }`}
                   >
                     {step.label}
@@ -83,11 +76,11 @@ export default function Navbar() {
 
                 {/* Connector line */}
                 {i < STEPS.length - 1 && (
-                  <div className="mx-2 mb-3 relative h-[1px] w-8">
-                    <div className="absolute inset-0 bg-white/10 rounded-full" />
+                  <div className="mx-2 mb-4 relative h-[2px] w-8">
+                    <div className="absolute inset-0 bg-[var(--border-soft)] rounded-full" />
                     {isCompleted && (
                       <motion.div
-                        className="absolute inset-0 bg-[#f97316]/50 rounded-full origin-left"
+                        className="absolute inset-0 bg-[var(--blue)]/50 rounded-full origin-left"
                         initial={{ scaleX: 0 }}
                         animate={{ scaleX: 1 }}
                         transition={{ duration: 0.4, ease: 'easeOut' }}
@@ -103,13 +96,13 @@ export default function Navbar() {
 
       {/* Right side pill */}
       <div
-        className={`text-xs font-medium px-3 py-1.5 rounded-full border transition-all ${
+        className={`text-xs font-bold px-4 py-1.5 rounded border transition-all ${
           currentIndex !== -1
-            ? 'bg-[#f97316]/10 border-[#f97316]/20 text-[#f97316]'
-            : 'bg-white/[0.04] border-white/[0.08] text-white/40'
+            ? 'bg-[var(--blue)]/10 border-[var(--blue)]/20 text-[var(--blue)]'
+            : 'bg-[var(--surface-2)] border-[var(--border)] text-[var(--chalk-dim)]'
         }`}
       >
-        {currentIndex !== -1 ? `Step ${currentIndex + 1} of 4` : 'AI · Powered'}
+        {currentIndex !== -1 ? `Step ${currentIndex + 1} of 4` : 'AI Tutor'}
       </div>
     </nav>
   );

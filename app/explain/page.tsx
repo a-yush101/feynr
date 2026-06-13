@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, ChevronRight, AlertCircle } from 'lucide-react';
+import { Sparkles, ChevronRight, AlertCircle, PenTool, Lightbulb, Zap, Target } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import { getSession, setSession } from '@/lib/storage';
 
@@ -22,12 +22,12 @@ function WordCountRing({ count, target }: { count: number; target: number }) {
   return (
     <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', width: 56, height: 56 }}>
       <svg style={{ position: 'absolute', inset: 0, transform: 'rotate(-90deg)' }} width="56" height="56">
-        <circle cx="28" cy="28" r={radius} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="3" />
+        <circle cx="28" cy="28" r={radius} fill="none" stroke="var(--border)" strokeWidth="4" />
         <motion.circle
           cx="28" cy="28" r={radius}
           fill="none"
-          stroke={pct >= 1 ? '#f97316' : '#1e3a5f'}
-          strokeWidth="3"
+          stroke={pct >= 1 ? '#8ecfb0' : '#8bbfd4'}
+          strokeWidth="4"
           strokeLinecap="round"
           strokeDasharray={circ}
           initial={{ strokeDashoffset: circ }}
@@ -35,7 +35,7 @@ function WordCountRing({ count, target }: { count: number; target: number }) {
           transition={{ duration: 0.4, ease: 'easeOut' }}
         />
       </svg>
-      <span style={{ fontSize: 11, fontWeight: 700, color: pct >= 1 ? '#f97316' : 'rgba(255,255,255,0.4)', zIndex: 1 }}>
+      <span style={{ fontSize: 12, fontWeight: 800, color: pct >= 1 ? 'var(--green)' : 'var(--chalk-dim)', zIndex: 1 }}>
         {count}
       </span>
     </div>
@@ -43,9 +43,9 @@ function WordCountRing({ count, target }: { count: number; target: number }) {
 }
 
 const TIPS = [
-  '💡 Explain as if teaching a friend — no jargon.',
-  '⚡ Cover the core idea first, then details.',
-  '🎯 Aim for 80+ words for thorough analysis.',
+  { icon: Lightbulb, text: 'Explain as if teaching a friend — no jargon.', color: '#e0d080' },
+  { icon: Zap, text: 'Cover the core idea first, then details.', color: '#8bbfd4' },
+  { icon: Target, text: 'Aim for 80+ words for thorough analysis.', color: '#e09080' },
 ];
 
 export default function ExplainPage() {
@@ -114,45 +114,50 @@ export default function ExplainPage() {
   if (!mounted) return null;
 
   return (
-    <div style={{ backgroundColor: '#0a0a0f', minHeight: '100vh' }}>
+    <div style={{ backgroundColor: 'var(--bg)', minHeight: '100vh' }}>
       <Navbar />
 
       {/* Ambient */}
-      <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0 }}>
-        <div style={{ position: 'absolute', top: '20%', left: '10%', width: 400, height: 400, background: 'radial-gradient(circle, rgba(30,58,95,0.2) 0%, transparent 70%)', borderRadius: '50%' }} />
-        <div style={{ position: 'absolute', bottom: '20%', right: '10%', width: 350, height: 350, background: 'radial-gradient(circle, rgba(249,115,22,0.08) 0%, transparent 70%)', borderRadius: '50%' }} />
+      <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0, opacity: 0.3 }}>
+        <div style={{ position: 'absolute', top: '20%', left: '10%', width: 400, height: 400, background: 'radial-gradient(circle, rgba(139, 191, 212, 0.05) 0%, transparent 60%)', borderRadius: '50%', filter: 'blur(30px)' }} />
+        <div style={{ position: 'absolute', bottom: '20%', right: '10%', width: 350, height: 350, background: 'radial-gradient(circle, rgba(224, 144, 128, 0.05) 0%, transparent 60%)', borderRadius: '50%', filter: 'blur(30px)' }} />
       </div>
 
       <div style={{ position: 'relative', zIndex: 1, paddingTop: 112, paddingBottom: 64, paddingLeft: 16, paddingRight: 16, maxWidth: 720, margin: '0 auto' }}>
         {/* Header */}
         <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} style={{ marginBottom: 28 }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 9999, backgroundColor: 'rgba(30,58,95,0.3)', border: '1px solid rgba(30,58,95,0.5)', marginBottom: 12 }}>
-            <span style={{ fontSize: 11, fontWeight: 600, color: 'rgba(147,197,253,0.8)' }}>Teaching topic</span>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 14px', borderRadius: 9999, backgroundColor: 'var(--surface)', border: '1px solid var(--border)', marginBottom: 12 }}>
+            <PenTool size={12} style={{ color: 'var(--blue)' }} />
+            <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--chalk-dim)' }}>Teaching topic</span>
           </div>
-          <h1 style={{ fontSize: 'clamp(1.8rem, 5vw, 2.8rem)', fontWeight: 800, color: '#fff', marginBottom: 8, lineHeight: 1.2 }}>
+          <h1 style={{ fontFamily: 'var(--font-chalk)', fontSize: 'clamp(3rem, 7vw, 4.5rem)', fontWeight: 700, color: 'var(--chalk)', marginBottom: 8, lineHeight: 1.1, transform: 'rotate(-1deg)' }}>
             Explain{' '}
-            <span style={{ background: 'linear-gradient(135deg, #f97316, #fbbf24)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            <span style={{ color: 'var(--yellow)' }}>
               {topic}
             </span>
           </h1>
-          <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.45)' }}>
-            Teach it to me like I have no background. The AI will probe your understanding.
+          <p style={{ fontFamily: 'var(--font-chalk)', fontSize: 24, color: 'var(--chalk-dim)', fontWeight: 500, transform: 'rotate(-1deg)' }}>
+            Teach it to me like I have no background.
           </p>
         </motion.div>
 
         {/* Tips */}
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-          style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 20 }}>
-          {TIPS.map((tip, i) => (
-            <div key={i} style={{ padding: '6px 12px', borderRadius: 9999, backgroundColor: '#111118', border: '1px solid rgba(255,255,255,0.08)', fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>
-              {tip}
+          style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginBottom: 24 }}>
+          {TIPS.map((tip, i) => {
+            const Icon = tip.icon;
+            return (
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 16px', borderRadius: 12, backgroundColor: '#212121', border: '1px solid rgba(220, 215, 200, 0.1)', fontSize: 13, fontWeight: 600, color: 'rgba(232, 226, 212, 0.55)' }}>
+              <Icon size={14} style={{ color: tip.color }} />
+              {tip.text}
             </div>
-          ))}
+            );
+          })}
         </motion.div>
 
         {/* Main card */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-          style={{ borderRadius: 20, backgroundColor: '#111118', border: '1px solid rgba(255,255,255,0.1)', overflow: 'hidden', boxShadow: '0 25px 50px rgba(0,0,0,0.4)', marginBottom: 16 }}>
+          style={{ borderRadius: 24, backgroundColor: 'var(--surface)', border: '2px solid var(--border)', overflow: 'hidden', boxShadow: '0 25px 50px rgba(0,0,0,0.4)', marginBottom: 20 }}>
           <div style={{ position: 'relative' }}>
             <textarea
               ref={textareaRef}
@@ -164,9 +169,9 @@ export default function ExplainPage() {
               disabled={isLoading}
               aria-label="Explanation text area"
               style={{
-                width: '100%', minHeight: 260, padding: '24px 24px 60px', backgroundColor: 'transparent',
-                color: '#fff', resize: 'none', border: 'none', outline: 'none',
-                fontSize: 15, lineHeight: 1.7, fontFamily: 'inherit', boxSizing: 'border-box',
+                width: '100%', minHeight: 280, padding: '24px 24px 70px', backgroundColor: 'transparent',
+                color: 'var(--chalk)', resize: 'none', border: 'none', outline: 'none',
+                fontSize: 16, lineHeight: 1.7, fontFamily: 'inherit', boxSizing: 'border-box', fontWeight: 500,
               }}
             />
             <div style={{ position: 'absolute', bottom: 16, right: 16 }}>
@@ -174,11 +179,11 @@ export default function ExplainPage() {
             </div>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 24px', borderTop: '1px solid rgba(255,255,255,0.07)', backgroundColor: 'rgba(255,255,255,0.02)' }}>
-            <span style={{ fontSize: 12, color: words < WORD_TARGET ? 'rgba(255,255,255,0.3)' : 'rgba(249,115,22,0.7)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 24px', borderTop: '2px solid var(--border-soft)', backgroundColor: 'var(--surface-2)' }}>
+            <span style={{ fontSize: 13, fontWeight: 700, color: words < WORD_TARGET ? 'var(--chalk-dimmer)' : 'var(--green)' }}>
               {words < WORD_TARGET ? `${WORD_TARGET - words} more words for best results` : '✓ Ready to analyze'}
             </span>
-            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)' }}>⌘+Enter to submit</span>
+            <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--chalk-dimmer)' }}>⌘+Enter to submit</span>
           </div>
         </motion.div>
 
@@ -186,8 +191,8 @@ export default function ExplainPage() {
         <AnimatePresence>
           {error && (
             <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-              style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '14px 16px', borderRadius: 12, backgroundColor: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', color: '#fca5a5', fontSize: 14, marginBottom: 16 }}>
-              <AlertCircle size={16} style={{ marginTop: 2, flexShrink: 0 }} />
+              style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '14px 16px', borderRadius: 12, backgroundColor: 'rgba(224, 144, 128, 0.1)', border: '2px solid rgba(224, 144, 128, 0.2)', color: 'var(--coral)', fontSize: 14, fontWeight: 600, marginBottom: 16 }}>
+              <AlertCircle size={18} style={{ marginTop: 2, flexShrink: 0 }} />
               {error}
             </motion.div>
           )}
@@ -201,11 +206,12 @@ export default function ExplainPage() {
           whileHover={isReady ? { scale: 1.02, y: -2 } : {}}
           whileTap={isReady ? { scale: 0.98 } : {}}
           style={{
-            width: '100%', padding: '16px 0', borderRadius: 14, fontWeight: 700, fontSize: 15,
+            width: '100%', padding: '16px 0', borderRadius: 14, fontWeight: 800, fontSize: 16,
             cursor: isReady ? 'pointer' : 'not-allowed', border: 'none', fontFamily: 'inherit',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, color: '#fff',
-            background: isReady ? 'linear-gradient(135deg, #1e3a5f 0%, #f97316 100%)' : 'rgba(255,255,255,0.07)',
-            boxShadow: isReady ? '0 8px 24px rgba(249,115,22,0.25)' : 'none',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, color: isReady ? 'var(--bg)' : 'var(--chalk-dimmer)',
+            backgroundColor: isReady ? 'var(--blue)' : 'var(--surface-2)',
+            boxShadow: isReady ? '0 8px 24px rgba(139, 191, 212, 0.25)' : 'none',
+            transition: 'all 0.2s',
           }}
           aria-disabled={!isReady}
         >
@@ -214,7 +220,7 @@ export default function ExplainPage() {
               <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}>
                 <Sparkles size={18} />
               </motion.div>
-              Analyzing your explanation…
+              Reading your explanation…
             </>
           ) : (
             <>Analyze My Understanding <ChevronRight size={18} /></>

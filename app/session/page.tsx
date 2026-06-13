@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Brain, User, AlertCircle, ChevronRight } from 'lucide-react';
+import { Send, Smile, User, AlertCircle, ChevronRight, BookOpen, Sparkles } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import { getSession, setSession } from '@/lib/storage';
 
@@ -20,11 +20,11 @@ interface HistoryItem {
 
 function ThinkingDots() {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '4px 2px' }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 2px' }}>
       {[0, 1, 2].map((i) => (
         <motion.div
           key={i}
-          style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: 'rgba(255,255,255,0.4)' }}
+          style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: 'var(--chalk-dim)' }}
           animate={{ y: [0, -6, 0], opacity: [0.4, 1, 0.4] }}
           transition={{ duration: 0.9, repeat: Infinity, delay: i * 0.18, ease: 'easeInOut' }}
         />
@@ -132,27 +132,27 @@ export default function SessionPage() {
   if (!mounted) return null;
 
   return (
-    <div style={{ backgroundColor: '#0a0a0f', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ backgroundColor: 'var(--bg)', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Navbar />
 
       {/* Ambient */}
-      <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0 }}>
-        <div style={{ position: 'absolute', top: '30%', left: '15%', width: 350, height: 350, background: 'radial-gradient(circle, rgba(30,58,95,0.18) 0%, transparent 70%)', borderRadius: '50%' }} />
-        <div style={{ position: 'absolute', bottom: '30%', right: '15%', width: 300, height: 300, background: 'radial-gradient(circle, rgba(249,115,22,0.07) 0%, transparent 70%)', borderRadius: '50%' }} />
+      <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0, opacity: 0.3 }}>
+        <div style={{ position: 'absolute', top: '30%', left: '15%', width: 350, height: 350, background: 'radial-gradient(circle, rgba(142, 207, 176, 0.04) 0%, transparent 60%)', borderRadius: '50%', filter: 'blur(40px)' }} />
+        <div style={{ position: 'absolute', bottom: '30%', right: '15%', width: 300, height: 300, background: 'radial-gradient(circle, rgba(224, 144, 128, 0.04) 0%, transparent 60%)', borderRadius: '50%', filter: 'blur(40px)' }} />
       </div>
 
       {/* Topic info bar */}
-      <div style={{ position: 'fixed', top: 72, left: 0, right: 0, zIndex: 40, display: 'flex', justifyContent: 'center', padding: '8px 16px' }}>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 14px', borderRadius: 9999, backgroundColor: '#111118', border: '1px solid rgba(255,255,255,0.08)', fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>
-          <Brain size={11} style={{ color: 'rgba(249,115,22,0.6)' }} />
+      <div style={{ position: 'fixed', top: 72, left: 0, right: 0, zIndex: 40, display: 'flex', justifyContent: 'center', padding: '12px 16px' }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '8px 16px', borderRadius: 9999, backgroundColor: 'var(--surface)', border: '2px solid var(--border)', fontSize: 13, fontWeight: 600, color: 'var(--chalk-dim)' }}>
+          <BookOpen size={14} style={{ color: 'var(--yellow)' }} />
           Socratic session on&nbsp;
-          <span style={{ color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}>{topic}</span>
+          <span style={{ color: 'var(--chalk)', fontWeight: 800 }}>{topic}</span>
         </div>
       </div>
 
       {/* Chat area */}
-      <div style={{ position: 'relative', zIndex: 1, flex: 1, paddingTop: 140, paddingBottom: 140, paddingLeft: 16, paddingRight: 16 }}>
-        <div style={{ maxWidth: 680, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div style={{ position: 'relative', zIndex: 1, flex: 1, paddingTop: 150, paddingBottom: 140, paddingLeft: 16, paddingRight: 16 }}>
+        <div style={{ maxWidth: 720, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 20 }}>
           <AnimatePresence initial={false}>
             {messages.map((msg) => (
               <motion.div
@@ -160,25 +160,25 @@ export default function SessionPage() {
                 initial={{ opacity: 0, x: msg.role === 'user' ? 20 : -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.3 }}
-                style={{ display: 'flex', alignItems: 'flex-start', gap: 12, flexDirection: msg.role === 'user' ? 'row-reverse' : 'row' }}
+                style={{ display: 'flex', alignItems: 'flex-start', gap: 14, flexDirection: msg.role === 'user' ? 'row-reverse' : 'row' }}
               >
                 {/* Avatar */}
                 <div style={{
-                  width: 34, height: 34, borderRadius: '50%', flexShrink: 0,
+                  width: 38, height: 38, borderRadius: 12, flexShrink: 0,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  background: msg.role === 'assistant' ? 'linear-gradient(135deg, #1e3a5f, #f97316)' : '#1e1e2a',
-                  border: msg.role === 'user' ? '1px solid rgba(255,255,255,0.1)' : 'none',
+                  background: msg.role === 'assistant' ? '#212121' : '#8bbfd4',
+                  border: msg.role === 'assistant' ? '2px solid rgba(220, 215, 200, 0.1)' : 'none',
                 }}>
-                  {msg.role === 'assistant' ? <Brain size={14} color="#fff" /> : <User size={14} color="rgba(255,255,255,0.6)" />}
+                  {msg.role === 'assistant' ? <Smile size={18} color="var(--green)" /> : <User size={18} color="var(--bg)" />}
                 </div>
 
                 {/* Bubble */}
                 <div style={{
-                  maxWidth: '75%', padding: '12px 16px', borderRadius: 16,
-                  fontSize: 14, lineHeight: 1.7, color: 'rgba(255,255,255,0.9)',
+                  maxWidth: '75%', padding: '14px 20px', borderRadius: 20,
+                  fontSize: 15, lineHeight: 1.6, fontWeight: 500,
                   ...(msg.role === 'assistant'
-                    ? { backgroundColor: '#111118', border: '1px solid rgba(255,255,255,0.1)', borderTopLeftRadius: 4 }
-                    : { backgroundColor: 'rgba(249,115,22,0.15)', border: '1px solid rgba(249,115,22,0.25)', borderTopRightRadius: 4 }),
+                    ? { backgroundColor: '#181818', border: '2px solid rgba(220, 215, 200, 0.1)', color: '#e8e2d4', borderTopLeftRadius: 6 }
+                    : { backgroundColor: '#212121', border: '2px solid rgba(220, 215, 200, 0.06)', color: '#e8e2d4', borderTopRightRadius: 6 }),
                 }}>
                   {msg.content}
                 </div>
@@ -190,11 +190,11 @@ export default function SessionPage() {
           <AnimatePresence>
             {isThinking && (
               <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }}
-                style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-                <div style={{ width: 34, height: 34, borderRadius: '50%', background: 'linear-gradient(135deg, #1e3a5f, #f97316)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <Brain size={14} color="#fff" />
+                style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
+                <div style={{ width: 38, height: 38, borderRadius: 12, background: 'var(--surface-2)', border: '2px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <Smile size={18} color="var(--green)" />
                 </div>
-                <div style={{ padding: '12px 16px', borderRadius: 16, borderTopLeftRadius: 4, backgroundColor: '#111118', border: '1px solid rgba(255,255,255,0.1)' }}>
+                <div style={{ padding: '16px 20px', borderRadius: 20, borderTopLeftRadius: 6, backgroundColor: 'var(--surface)', border: '2px solid var(--border)' }}>
                   <ThinkingDots />
                 </div>
               </motion.div>
@@ -205,15 +205,15 @@ export default function SessionPage() {
           <AnimatePresence>
             {shouldEnd && (
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-                style={{ padding: 24, borderRadius: 20, backgroundColor: '#111118', border: '1px solid rgba(249,115,22,0.2)', textAlign: 'center', marginTop: 8 }}>
-                <div style={{ fontSize: 32, marginBottom: 10 }}>✨</div>
-                <h3 style={{ color: '#fff', fontWeight: 700, fontSize: 18, marginBottom: 6 }}>Session complete!</h3>
-                <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, marginBottom: 20, lineHeight: 1.6 }}>
+                style={{ padding: 32, borderRadius: 24, backgroundColor: 'var(--surface)', border: '2px solid var(--blue)', textAlign: 'center', marginTop: 16 }}>
+                <div style={{ fontSize: 40, marginBottom: 12, display: 'flex', justifyContent: 'center' }}><Sparkles size={40} style={{ color: '#8bbfd4' }} /></div>
+                <h3 style={{ fontFamily: 'var(--font-chalk)', color: 'var(--chalk)', fontWeight: 700, fontSize: 32, marginBottom: 8, transform: 'rotate(-1deg)' }}>Session complete!</h3>
+                <p style={{ fontFamily: 'var(--font-chalk)', color: 'var(--chalk-dim)', fontSize: 24, fontWeight: 500, marginBottom: 24, lineHeight: 1.4, transform: 'rotate(-1deg)' }}>
                   The AI has probed your understanding. Time to see your clarity report.
                 </p>
-                <motion.button id="view-report-btn" onClick={handleViewReport} whileHover={{ scale: 1.02, y: -1 }} whileTap={{ scale: 0.98 }}
-                  style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 24px', borderRadius: 12, background: 'linear-gradient(135deg, #1e3a5f, #f97316)', color: '#fff', fontWeight: 700, fontSize: 14, border: 'none', cursor: 'pointer', fontFamily: 'inherit', boxShadow: '0 8px 24px rgba(249,115,22,0.25)' }}>
-                  View My Report <ChevronRight size={16} />
+                <motion.button id="view-report-btn" onClick={handleViewReport} whileHover={{ scale: 1.02, y: -2 }} whileTap={{ scale: 0.98 }}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '16px 28px', borderRadius: 14, backgroundColor: 'var(--blue)', color: 'var(--bg)', fontWeight: 800, fontSize: 15, border: 'none', cursor: 'pointer', fontFamily: 'inherit', boxShadow: '0 8px 24px rgba(139, 191, 212, 0.25)' }}>
+                  View My Report <ChevronRight size={18} />
                 </motion.button>
               </motion.div>
             )}
@@ -223,8 +223,8 @@ export default function SessionPage() {
           <AnimatePresence>
             {error && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                style={{ display: 'flex', gap: 8, padding: '12px 14px', borderRadius: 10, backgroundColor: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', color: '#fca5a5', fontSize: 13 }}>
-                <AlertCircle size={14} style={{ marginTop: 2, flexShrink: 0 }} /> {error}
+                style={{ display: 'flex', gap: 8, padding: '12px 14px', borderRadius: 12, backgroundColor: 'rgba(224, 144, 128, 0.1)', border: '2px solid rgba(224, 144, 128, 0.2)', color: 'var(--coral)', fontSize: 14, fontWeight: 600 }}>
+                <AlertCircle size={16} style={{ marginTop: 2, flexShrink: 0 }} /> {error}
               </motion.div>
             )}
           </AnimatePresence>
@@ -235,9 +235,9 @@ export default function SessionPage() {
 
       {/* Input bar */}
       {!shouldEnd && (
-        <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 50, padding: '16px', background: 'linear-gradient(to top, #0a0a0f 60%, transparent)' }}>
-          <div style={{ maxWidth: 680, margin: '0 auto' }}>
-            <div style={{ display: 'flex', alignItems: 'flex-end', gap: 10, padding: '10px 14px', borderRadius: 18, backgroundColor: '#111118', border: '1px solid rgba(255,255,255,0.12)', boxShadow: '0 -4px 24px rgba(0,0,0,0.4)' }}>
+        <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 50, padding: '20px 16px', background: 'linear-gradient(to top, var(--bg) 70%, transparent)' }}>
+          <div style={{ maxWidth: 720, margin: '0 auto' }}>
+            <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, padding: '12px 16px', borderRadius: 20, backgroundColor: 'var(--surface)', border: '2px solid var(--border)', boxShadow: '0 -4px 30px rgba(0,0,0,0.5)' }}>
               <textarea
                 ref={inputRef}
                 id="session-input"
@@ -248,7 +248,7 @@ export default function SessionPage() {
                 disabled={isThinking}
                 aria-label="Your answer"
                 rows={1}
-                style={{ flex: 1, backgroundColor: 'transparent', color: '#fff', resize: 'none', border: 'none', outline: 'none', fontSize: 14, lineHeight: 1.6, maxHeight: 120, minHeight: 36, paddingTop: 6, fontFamily: 'inherit' }}
+                style={{ flex: 1, backgroundColor: 'transparent', color: 'var(--chalk)', resize: 'none', border: 'none', outline: 'none', fontSize: 15, fontWeight: 500, lineHeight: 1.6, maxHeight: 120, minHeight: 36, paddingTop: 6, fontFamily: 'inherit' }}
               />
               <motion.button
                 id="session-send-btn"
@@ -258,17 +258,17 @@ export default function SessionPage() {
                 whileTap={input.trim() && !isThinking ? { scale: 0.92 } : {}}
                 aria-label="Send"
                 style={{
-                  width: 38, height: 38, borderRadius: 10, flexShrink: 0, border: 'none', cursor: input.trim() && !isThinking ? 'pointer' : 'not-allowed',
-                  backgroundColor: input.trim() && !isThinking ? '#f97316' : 'rgba(255,255,255,0.07)',
-                  color: input.trim() && !isThinking ? '#fff' : 'rgba(255,255,255,0.25)',
+                  width: 44, height: 44, borderRadius: 12, flexShrink: 0, border: 'none', cursor: input.trim() && !isThinking ? 'pointer' : 'not-allowed',
+                  backgroundColor: input.trim() && !isThinking ? '#e0d080' : '#212121',
+                  color: input.trim() && !isThinking ? '#0d0d0d' : 'rgba(232, 226, 212, 0.28)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  boxShadow: input.trim() && !isThinking ? '0 4px 12px rgba(249,115,22,0.3)' : 'none',
+                  transition: 'all 0.2s',
                 }}
               >
-                <Send size={16} />
+                <Send size={18} />
               </motion.button>
             </div>
-            <p style={{ textAlign: 'center', fontSize: 11, color: 'rgba(255,255,255,0.18)', marginTop: 6 }}>
+            <p style={{ textAlign: 'center', fontSize: 12, fontWeight: 600, color: 'var(--chalk-dimmer)', marginTop: 8 }}>
               Answer honestly — this is how you actually learn.
             </p>
           </div>
