@@ -3,8 +3,7 @@
   <h1>Feynr — Learn by Explaining</h1>
   <p><em>"The best way to learn is to teach."</em></p>
   <p>
-    <a href="https://feynr.vercel.app"><strong>View Live Demo</strong></a> ·
-    <a href="#demo-video"><strong>Watch Video</strong></a>
+    <a href="#[demo-video](https://youtu.be/WPgsAt4Orqk)"><strong>Watch Video</strong></a>
   </p>
 </div>
 
