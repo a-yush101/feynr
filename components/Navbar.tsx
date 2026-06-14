@@ -2,109 +2,187 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { motion } from 'framer-motion';
-import { Brain } from 'lucide-react';
 
 const STEPS = [
-  { label: 'Explain', href: '/explain', path: '/explain' },
-  { label: 'Session', href: '/session', path: '/session' },
-  { label: 'Report', href: '/report', path: '/report' },
-  { label: 'Quiz', href: '/quiz', path: '/quiz' },
+  { label: 'Explain',  path: '/explain'  },
+  { label: 'Session',  path: '/session'  },
+  { label: 'Report',   path: '/report'   },
+  { label: 'Quiz',     path: '/quiz'     },
 ] as const;
+
+function StepProgress({ currentPath }: { currentPath: string }) {
+  const activeIndex = STEPS.findIndex((s) => currentPath.startsWith(s.path));
+  if (activeIndex === -1) return null;
+
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '0',
+      }}
+      aria-label="Progress steps"
+      role="list"
+    >
+      {STEPS.map((step, i) => {
+        const isActive   = i === activeIndex;
+        const isComplete = i < activeIndex;
+        const isDimmed   = i > activeIndex;
+
+        return (
+          <div key={step.path} style={{ display: 'flex', alignItems: 'center' }} role="listitem">
+            {/* Step pill */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+              }}
+            >
+              {/* Circle */}
+              <div
+                style={{
+                  width: '22px',
+                  height: '22px',
+                  borderRadius: '50%',
+                  backgroundColor: isActive ? '#111111' : isComplete ? '#111111' : '#e5e5e5',
+                  color: isActive || isComplete ? '#ffffff' : '#aaaaaa',
+                  fontSize: '10px',
+                  fontWeight: 700,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                  transition: 'all 0.3s',
+                }}
+                aria-current={isActive ? 'step' : undefined}
+              >
+                {isComplete ? (
+                  // Checkmark for completed steps
+                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
+                    <path d="M2 5l2.5 2.5L8 3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                ) : (
+                  i + 1
+                )}
+              </div>
+
+              {/* Label — only show on active step */}
+              {isActive && (
+                <span
+                  style={{
+                    fontSize: '0.75rem',
+                    fontWeight: 600,
+                    color: '#111111',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {step.label}
+                </span>
+              )}
+            </div>
+
+            {/* Connector line between steps */}
+            {i < STEPS.length - 1 && (
+              <div
+                style={{
+                  width: isActive ? '32px' : '20px',
+                  height: '1px',
+                  backgroundColor: isComplete ? '#111111' : '#e5e5e5',
+                  margin: '0 6px',
+                  transition: 'all 0.3s',
+                }}
+                aria-hidden="true"
+              />
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 
 export default function Navbar() {
   const pathname = usePathname();
-
-  const currentIndex = STEPS.findIndex((s) => pathname.startsWith(s.path));
+  const isLanding = pathname === '/';
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 border-b border-[var(--border)] bg-[var(--bg)]/90 backdrop-blur-md">
-      {/* Logo */}
-      <Link href="/" className="flex items-center gap-3 group" id="nav-logo">
-        <motion.div
-          whileHover={{ rotate: -5, scale: 1.05 }}
-          transition={{ type: 'spring', stiffness: 300, damping: 15 }}
-          className="w-8 h-8 rounded border-2 border-dashed border-[var(--border)] flex items-center justify-center text-[var(--yellow)] bg-[var(--surface-2)]"
-        >
-          <Brain size={18} />
-        </motion.div>
-        <span style={{ fontFamily: 'var(--font-chalk)', fontSize: '28px', transform: 'rotate(-2deg)' }} className="text-[var(--chalk)] font-bold tracking-tight group-hover:text-[var(--chalk-dim)] transition-colors">
-          Feynr
-        </span>
-      </Link>
-
-      {/* Progress steps — only shown inside the app flow */}
-      {currentIndex !== -1 && (
-        <div className="flex items-center gap-1" id="nav-progress">
-          {STEPS.map((step, i) => {
-            const isCompleted = i < currentIndex;
-            const isActive = i === currentIndex;
-            const isFuture = i > currentIndex;
-
-            return (
-               <div key={step.path} className="flex items-center">
-                <motion.div
-                  initial={{ opacity: 0, y: -6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.08 }}
-                  className="flex flex-col items-center"
-                >
-                  {/* Step dot */}
-                  <div
-                    className={`relative w-[12px] h-[12px] rounded-full border-2 transition-all duration-300 ${
-                      isActive
-                        ? 'border-[var(--blue)] bg-[var(--blue)] scale-110'
-                        : isCompleted
-                          ? 'border-[var(--blue)] bg-[var(--blue)] opacity-60'
-                          : 'border-[var(--chalk-dimmer)] bg-transparent'
-                    }`}
-                  >
-                  </div>
-                  {/* Step label */}
-                  <span
-                    className={`mt-1.5 text-[10px] font-bold tracking-wide transition-colors ${
-                      isActive
-                        ? 'text-[var(--blue)]'
-                        : isCompleted
-                          ? 'text-[var(--chalk-dim)]'
-                          : 'text-[var(--chalk-dimmer)]'
-                    }`}
-                  >
-                    {step.label}
-                  </span>
-                </motion.div>
-
-                {/* Connector line */}
-                {i < STEPS.length - 1 && (
-                  <div className="mx-2 mb-4 relative h-[2px] w-8">
-                    <div className="absolute inset-0 bg-[var(--border-soft)] rounded-full" />
-                    {isCompleted && (
-                      <motion.div
-                        className="absolute inset-0 bg-[var(--blue)]/50 rounded-full origin-left"
-                        initial={{ scaleX: 0 }}
-                        animate={{ scaleX: 1 }}
-                        transition={{ duration: 0.4, ease: 'easeOut' }}
-                      />
-                    )}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      )}
-
-      {/* Right side pill */}
-      <div
-        className={`text-xs font-bold px-4 py-1.5 rounded border-2 border-dashed transition-all ${
-          currentIndex !== -1
-            ? 'bg-[var(--blue)]/10 border-[var(--blue)] text-[var(--blue)]'
-            : 'bg-transparent border-[var(--border)] text-[var(--chalk-dim)]'
-        }`}
-        style={{ fontFamily: 'var(--font-chalk)', fontSize: 16 }}
+    <header
+      id="navbar"
+      style={{
+        position: 'fixed',
+        top: 0, left: 0, right: 0,
+        zIndex: 50,
+        backgroundColor: 'rgba(255,255,255,0.96)',
+        backdropFilter: 'blur(12px)',
+        borderBottom: '1px solid #f0f0f0',
+        transition: 'all 0.3s ease',
+      }}
+    >
+      <nav
+        style={{
+          maxWidth: '1152px',
+          margin: '0 auto',
+          padding: '0 24px',
+          height: '64px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
+        aria-label="Main navigation"
       >
-        {currentIndex !== -1 ? `Step ${currentIndex + 1} of 4` : 'AI Tutor'}
-      </div>
-    </nav>
+        {/* Logo */}
+        <Link
+          href="/"
+          aria-label="Feynr home"
+          style={{
+            display: 'flex', alignItems: 'center', gap: '8px',
+            textDecoration: 'none', userSelect: 'none', flexShrink: 0,
+          }}
+        >
+          <span
+            aria-hidden="true"
+            style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              width: '30px', height: '30px', borderRadius: '8px',
+              backgroundColor: '#111111', color: '#ffffff',
+              fontSize: '13px', fontWeight: 900, lineHeight: 1,
+            }}
+          >
+            F
+          </span>
+          <span style={{
+            fontSize: '1.1rem', fontWeight: 800,
+            letterSpacing: '-0.02em', color: '#111111',
+          }}>
+            feynr
+          </span>
+        </Link>
+
+        {/* Center: Step progress (app pages only) */}
+        {!isLanding && (
+          <div style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}>
+            <StepProgress currentPath={pathname} />
+          </div>
+        )}
+
+        {/* Right: Agent League badge */}
+        <span
+          style={{
+            fontSize: '0.75rem',
+            fontWeight: 500,
+            color: '#111111',
+            border: '1px solid #e5e5e5',
+            backgroundColor: 'transparent',
+            padding: '6px 14px',
+            borderRadius: '9999px',
+            whiteSpace: 'nowrap',
+            flexShrink: 0,
+          }}
+        >
+          Built for Agent League ✦
+        </span>
+      </nav>
+    </header>
   );
 }

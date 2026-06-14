@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Smile, User, AlertCircle, ChevronRight, BookOpen, Sparkles } from 'lucide-react';
+import { Send, Bot, User, AlertCircle, ChevronRight, BookOpen, Sparkles } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import { getSession, setSession } from '@/lib/storage';
 
@@ -12,20 +12,16 @@ interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
 }
-
-interface HistoryItem {
-  role: string;
-  content: string;
-}
+interface HistoryItem { role: string; content: string; }
 
 function ThinkingDots() {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 2px' }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 2px' }}>
       {[0, 1, 2].map((i) => (
         <motion.div
           key={i}
-          style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: 'var(--chalk-dim)' }}
-          animate={{ y: [0, -6, 0], opacity: [0.4, 1, 0.4] }}
+          style={{ width: '7px', height: '7px', borderRadius: '50%', backgroundColor: '#d4d4d4' }}
+          animate={{ y: [0, -5, 0], opacity: [0.4, 1, 0.4] }}
           transition={{ duration: 0.9, repeat: Infinity, delay: i * 0.18, ease: 'easeInOut' }}
         />
       ))}
@@ -72,13 +68,11 @@ export default function SessionPage() {
     if (!trimmed || isThinking || shouldEnd) return;
     setError(null);
     setInput('');
-
     const userMsg: ChatMessage = { id: `user-${Date.now()}`, role: 'user', content: trimmed };
     setMessages((p) => [...p, userMsg]);
     const updatedHistory: HistoryItem[] = [...conversationHistory, { role: 'user', content: trimmed }];
     setConversationHistory(updatedHistory);
     setIsThinking(true);
-
     try {
       const res = await fetch('/api/followup', {
         method: 'POST',
@@ -90,7 +84,6 @@ export default function SessionPage() {
         throw new Error(e.error ?? `Server error ${res.status}`);
       }
       const data = await res.json() as { nextQuestion: string | null; shouldEnd: boolean };
-
       if (data.shouldEnd || !data.nextQuestion) {
         setShouldEnd(true);
         const session = getSession();
@@ -102,9 +95,8 @@ export default function SessionPage() {
         }
       } else {
         const aiMsg: ChatMessage = { id: `ai-${Date.now()}`, role: 'assistant', content: data.nextQuestion };
-        const newHistory: HistoryItem[] = [...updatedHistory, { role: 'assistant', content: data.nextQuestion }];
         setMessages((p) => [...p, aiMsg]);
-        setConversationHistory(newHistory);
+        setConversationHistory([...updatedHistory, { role: 'assistant', content: data.nextQuestion }]);
         setQuestionCount((c) => c + 1);
       }
     } catch (err) {
@@ -132,47 +124,46 @@ export default function SessionPage() {
   if (!mounted) return null;
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column' }}>
       <Navbar />
 
       {/* Topic info bar */}
-      <div style={{ position: 'fixed', top: 72, left: 0, right: 0, zIndex: 40, display: 'flex', justifyContent: 'center', padding: '12px 16px' }}>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '8px 16px', borderRadius: 9999, backgroundColor: 'var(--surface)', border: '2px solid var(--border)', fontSize: 13, fontWeight: 600, color: 'var(--chalk-dim)' }}>
-          <BookOpen size={14} style={{ color: 'var(--yellow)' }} />
+      <div style={{ position: 'fixed', top: '64px', left: 0, right: 0, zIndex: 40, display: 'flex', justifyContent: 'center', padding: '10px 16px', backgroundColor: '#ffffff', borderBottom: '1px solid #f0f0f0' }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 16px', borderRadius: '9999px', backgroundColor: '#f5f5f5', border: '1px solid #e5e5e5', fontSize: '13px', fontWeight: 600, color: '#555555' }}>
+          <BookOpen size={13} style={{ color: '#f97316' }} />
           Socratic session on&nbsp;
-          <span style={{ color: 'var(--chalk)', fontWeight: 800 }}>{topic}</span>
+          <span style={{ color: '#111111', fontWeight: 800 }}>{topic}</span>
         </div>
       </div>
 
       {/* Chat area */}
-      <div style={{ position: 'relative', zIndex: 1, flex: 1, paddingTop: 150, paddingBottom: 140, paddingLeft: 16, paddingRight: 16 }}>
-        <div style={{ maxWidth: 720, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 20 }}>
+      <div style={{ flex: 1, paddingTop: '130px', paddingBottom: '130px', paddingLeft: '16px', paddingRight: '16px' }}>
+        <div style={{ maxWidth: '680px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <AnimatePresence initial={false}>
             {messages.map((msg) => (
               <motion.div
                 key={msg.id}
-                initial={{ opacity: 0, x: msg.role === 'user' ? 20 : -20 }}
-                animate={{ opacity: 1, x: 0 }}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
-                style={{ display: 'flex', alignItems: 'flex-start', gap: 14, flexDirection: msg.role === 'user' ? 'row-reverse' : 'row' }}
+                style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', flexDirection: msg.role === 'user' ? 'row-reverse' : 'row' }}
               >
                 {/* Avatar */}
                 <div style={{
-                  width: 38, height: 38, borderRadius: 12, flexShrink: 0,
+                  width: '36px', height: '36px', borderRadius: '10px', flexShrink: 0,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  background: msg.role === 'assistant' ? '#212121' : '#8bbfd4',
-                  border: msg.role === 'assistant' ? '2px solid rgba(220, 215, 200, 0.1)' : 'none',
+                  backgroundColor: msg.role === 'assistant' ? '#111111' : '#f97316',
                 }}>
-                  {msg.role === 'assistant' ? <Smile size={18} color="var(--green)" /> : <User size={18} color="var(--bg)" />}
+                  {msg.role === 'assistant'
+                    ? <Bot size={16} color="#ffffff" />
+                    : <User size={16} color="#ffffff" />}
                 </div>
-
                 {/* Bubble */}
                 <div style={{
-                  maxWidth: '75%', padding: '14px 20px', borderRadius: 20,
-                  fontSize: 15, lineHeight: 1.6, fontWeight: 500,
+                  maxWidth: '75%', padding: '12px 18px', fontSize: '0.9375rem', lineHeight: 1.65, fontWeight: 500,
                   ...(msg.role === 'assistant'
-                    ? { backgroundColor: '#181818', border: '2px solid rgba(220, 215, 200, 0.1)', color: '#e8e2d4', borderTopLeftRadius: 6 }
-                    : { backgroundColor: '#212121', border: '2px solid rgba(220, 215, 200, 0.06)', color: '#e8e2d4', borderTopRightRadius: 6 }),
+                    ? { backgroundColor: '#f5f5f5', border: '1px solid #ebebeb', borderRadius: '4px 16px 16px 16px', color: '#111111' }
+                    : { backgroundColor: '#111111', borderRadius: '16px 4px 16px 16px', color: '#ffffff' }),
                 }}>
                   {msg.content}
                 </div>
@@ -180,35 +171,51 @@ export default function SessionPage() {
             ))}
           </AnimatePresence>
 
-          {/* Thinking */}
+          {/* Thinking indicator */}
           <AnimatePresence>
             {isThinking && (
-              <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }}
-                style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
-                <div style={{ width: 38, height: 38, borderRadius: 12, background: 'var(--surface-2)', border: '2px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <Smile size={18} color="var(--green)" />
+              <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: '#111111', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <Bot size={16} color="#ffffff" />
                 </div>
-                <div style={{ padding: '16px 20px', borderRadius: 20, borderTopLeftRadius: 6, backgroundColor: 'var(--surface)', border: '2px solid var(--border)' }}>
+                <div style={{ padding: '14px 18px', borderRadius: '4px 16px 16px 16px', backgroundColor: '#f5f5f5', border: '1px solid #ebebeb' }}>
                   <ThinkingDots />
                 </div>
               </motion.div>
             )}
           </AnimatePresence>
 
-          {/* End card */}
+          {/* Session complete card */}
           <AnimatePresence>
             {shouldEnd && (
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-                style={{ padding: 32, borderRadius: 24, backgroundColor: 'var(--surface)', border: '2px solid var(--blue)', textAlign: 'center', marginTop: 16 }}>
-                <div style={{ fontSize: 40, marginBottom: 12, display: 'flex', justifyContent: 'center' }}><Sparkles size={40} style={{ color: '#8bbfd4' }} /></div>
-                <h3 style={{ fontFamily: 'var(--font-chalk)', color: 'var(--chalk)', fontWeight: 700, fontSize: 32, marginBottom: 8, transform: 'rotate(-1deg)' }}>Session complete!</h3>
-                <p style={{ fontFamily: 'var(--font-chalk)', color: 'var(--chalk-dim)', fontSize: 24, fontWeight: 500, marginBottom: 24, lineHeight: 1.4, transform: 'rotate(-1deg)' }}>
+                style={{ padding: '32px', borderRadius: '16px', backgroundColor: '#f5f5f5', border: '1px solid #e5e5e5', textAlign: 'center', marginTop: '8px' }}>
+              <div style={{ width: '52px', height: '52px', borderRadius: '14px', backgroundColor: '#f5f5f5', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px', marginLeft: 'auto', marginRight: 'auto' }}>
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#111111" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>
+                </svg>
+              </div>
+                <h3 style={{ fontSize: '1.375rem', fontWeight: 800, color: '#111111', marginBottom: '8px' }}>Session complete!</h3>
+                <p style={{ fontSize: '0.9375rem', color: '#555555', marginBottom: '24px', lineHeight: 1.6 }}>
                   The AI has probed your understanding. Time to see your clarity report.
                 </p>
-                <motion.button id="view-report-btn" onClick={handleViewReport} whileHover={{ scale: 1.02, backgroundColor: '#80cbc4', color: '#1a2e1a' }} whileTap={{ scale: 0.98 }}
-                  style={{ width: '100%', padding: '16px 0', borderRadius: 14, fontWeight: 800, fontSize: 16, border: '2px dashed #80cbc4', cursor: 'pointer', fontFamily: 'inherit', backgroundColor: 'rgba(0,0,0,0)', color: '#80cbc4', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+                <button
+                  id="view-report-btn"
+                  onClick={handleViewReport}
+                  style={{
+                    width: '100%', padding: '13px 0', borderRadius: '9999px',
+                    fontWeight: 700, fontSize: '0.9375rem', border: 'none',
+                    cursor: 'pointer', fontFamily: 'inherit',
+                    backgroundColor: '#111111', color: '#ffffff',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                    transition: 'background-color 0.2s',
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#f97316')}
+                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#111111')}
+                >
                   View Clarity Report <ChevronRight size={18} />
-                </motion.button>
+                </button>
               </motion.div>
             )}
           </AnimatePresence>
@@ -217,8 +224,8 @@ export default function SessionPage() {
           <AnimatePresence>
             {error && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                style={{ display: 'flex', gap: 8, padding: '12px 14px', borderRadius: 12, backgroundColor: 'rgba(224, 144, 128, 0.1)', border: '2px solid rgba(224, 144, 128, 0.2)', color: 'var(--coral)', fontSize: 14, fontWeight: 600 }}>
-                <AlertCircle size={16} style={{ marginTop: 2, flexShrink: 0 }} /> {error}
+                style={{ display: 'flex', gap: '8px', padding: '12px 14px', borderRadius: '10px', backgroundColor: 'rgba(239,68,68,0.05)', border: '1px solid rgba(239,68,68,0.2)', color: '#dc2626', fontSize: '0.875rem', fontWeight: 600 }}>
+                <AlertCircle size={16} style={{ marginTop: '2px', flexShrink: 0 }} /> {error}
               </motion.div>
             )}
           </AnimatePresence>
@@ -229,42 +236,56 @@ export default function SessionPage() {
 
       {/* Input bar */}
       {!shouldEnd && (
-        <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 50, padding: '20px 16px', background: 'linear-gradient(to top, var(--bg) 70%, transparent)' }}>
-          <div style={{ maxWidth: 720, margin: '0 auto' }}>
-            <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, padding: '12px 16px', borderRadius: 20, backgroundColor: 'var(--surface)', border: '2px solid var(--border)', boxShadow: '0 -4px 30px rgba(0,0,0,0.5)' }}>
+        <div style={{
+          position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 50,
+          padding: '12px 16px 20px',
+          background: 'linear-gradient(to top, #ffffff 70%, transparent)',
+        }}>
+          <div style={{ maxWidth: '680px', margin: '0 auto' }}>
+            <div style={{
+              display: 'flex', alignItems: 'flex-end', gap: '10px',
+              padding: '10px 12px 10px 16px', borderRadius: '16px',
+              backgroundColor: '#ffffff', border: '1.5px solid #e5e5e5',
+              boxShadow: '0 -2px 20px rgba(0,0,0,0.06)',
+            }}>
               <textarea
                 ref={inputRef}
                 id="session-input"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
-                onFocus={(e) => (e.target.style.borderColor = '#80cbc4')}
-                onBlur={(e) => (e.target.style.borderColor = 'var(--border)')}
                 placeholder="Type your answer… (Enter to send)"
                 disabled={isThinking}
                 aria-label="Your answer"
                 rows={1}
-                style={{ flex: 1, padding: '14px 20px', fontSize: 16, lineHeight: 1.5, color: 'var(--chalk)', backgroundColor: 'rgba(0,0,0,0)', border: '2px solid var(--border)', borderRadius: 16, resize: 'none', outline: 'none', minHeight: 52, maxHeight: 150, fontFamily: 'inherit', fontWeight: 500, overflowY: 'auto' }}
+                style={{
+                  flex: 1, padding: '8px 4px', fontSize: '0.9375rem',
+                  lineHeight: 1.5, color: '#111111', backgroundColor: 'transparent',
+                  border: 'none', outline: 'none', resize: 'none',
+                  minHeight: '40px', maxHeight: '120px',
+                  fontFamily: 'inherit', fontWeight: 500, overflowY: 'auto',
+                }}
               />
-              <motion.button
+              <button
                 id="send-btn"
                 onClick={handleSend}
                 disabled={!input.trim() || isThinking}
-                whileHover={input.trim() && !isThinking ? { scale: 1.05, backgroundColor: '#fff176', color: '#1a2e1a' } : {}}
-                whileTap={input.trim() && !isThinking ? { scale: 0.95 } : {}}
                 aria-label="Send"
                 style={{
-                  width: 44, height: 44, borderRadius: 12, flexShrink: 0, border: input.trim() && !isThinking ? '2px dashed #fff176' : '2px dashed var(--border)', cursor: input.trim() && !isThinking ? 'pointer' : 'not-allowed',
-                  backgroundColor: 'rgba(0,0,0,0)',
-                  color: input.trim() && !isThinking ? '#fff176' : 'rgba(245, 240, 232, 0.3)',
+                  width: '40px', height: '40px', borderRadius: '10px', flexShrink: 0,
+                  border: 'none', cursor: input.trim() && !isThinking ? 'pointer' : 'not-allowed',
+                  backgroundColor: input.trim() && !isThinking ? '#111111' : '#e5e5e5',
+                  color: input.trim() && !isThinking ? '#ffffff' : '#999999',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   transition: 'all 0.2s',
                 }}
+                onMouseEnter={(e) => { if (input.trim() && !isThinking) e.currentTarget.style.backgroundColor = '#f97316'; }}
+                onMouseLeave={(e) => { if (input.trim() && !isThinking) e.currentTarget.style.backgroundColor = '#111111'; }}
               >
-                <Send size={18} />
-              </motion.button>
+                {isThinking ? <Sparkles size={16} /> : <Send size={16} />}
+              </button>
             </div>
-            <p style={{ textAlign: 'center', fontSize: 12, fontWeight: 600, color: 'var(--chalk-dimmer)', marginTop: 8 }}>
+            <p style={{ textAlign: 'center', fontSize: '11px', fontWeight: 500, color: '#aaaaaa', marginTop: '6px' }}>
               Answer honestly — this is how you actually learn.
             </p>
           </div>

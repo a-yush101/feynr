@@ -5,10 +5,17 @@ import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Sparkles, ChevronRight, AlertCircle } from 'lucide-react';
 import { setSession } from '@/lib/storage';
+import Navbar from '@/components/Navbar';
 
 function wordCount(text: string): number {
   return text.trim().split(/\s+/).filter(Boolean).length;
 }
+
+const DEPTH_LEVELS = [
+  { value: 'beginner',     label: 'Beginner',     desc: 'Start from basics' },
+  { value: 'intermediate', label: 'Intermediate',  desc: 'Assume some background' },
+  { value: 'advanced',     label: 'Advanced',      desc: 'Deep technical detail' },
+] as const;
 
 export default function ExplainPage() {
   const router = useRouter();
@@ -20,42 +27,32 @@ export default function ExplainPage() {
   const [step, setStep] = useState<'topic' | 'explain'>('topic');
 
   const words = wordCount(explanation);
-  const isExplainReady = words > 0 && !isLoading;
+  const isExplainReady = words >= 30 && !isLoading;
   const isTopicReady = topic.trim().length > 0;
 
-  const handleNextStep = () => {
-    if (isTopicReady) setStep('explain');
-  };
+  const handleNextStep = () => { if (isTopicReady) setStep('explain'); };
 
   const handleSubmit = async () => {
     if (!isExplainReady) return;
     setError(null);
     setIsLoading(true);
-
     try {
       const res = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ topic, depthLevel, explanation }),
       });
-      
       if (!res.ok) {
         const e = await res.json().catch(() => ({})) as { error?: string };
         throw new Error(e.error ?? `Server error ${res.status}`);
       }
-      
       const data = await res.json() as {
         claims: string[]; gaps: string[]; misconceptions: string[]; firstQuestion: string;
       };
-      
       const sessionId = `session_${Date.now()}`;
       setSession({
-        sessionId,
-        userId: undefined,
-        topic: topic,
-        step: 'followup',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        sessionId, userId: undefined, topic, step: 'followup',
+        createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
         messages: [
           { id: 'user-0', role: 'user', content: explanation, createdAt: new Date().toISOString() },
           {
@@ -70,7 +67,6 @@ export default function ExplainPage() {
         clarityScore: undefined,
         tags: [depthLevel],
       });
-      
       router.push('/session');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong.');
@@ -78,170 +74,255 @@ export default function ExplainPage() {
     }
   };
 
-  const outlineStyle = {
-    color: 'transparent',
-    WebkitTextStroke: '2px #f5f0e8',
-    textShadow: '2px 2px 4px rgba(245,240,232,0.3), -1px -1px 0px rgba(245,240,232,0.1)'
-  };
-
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#0a0a0f', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-      
-      {/* Back Arrow */}
-      <button 
-        onClick={() => router.push('/')}
-        style={{
-          position: 'absolute', top: 40, left: 40,
-          background: 'rgba(0,0,0,0)', border: 'none', color: 'rgba(245,240,232,0.6)',
-          cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, fontSize: 16, fontWeight: 600,
-          transition: 'color 0.2s'
-        }}
-        onMouseEnter={(e) => e.currentTarget.style.color = '#f5f0e8'}
-        onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(245,240,232,0.6)'}
-      >
-        <ArrowLeft size={20} /> Back
-      </button>
+    <div style={{ minHeight: '100vh', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column' }}>
+      <Navbar />
 
-      <motion.div 
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: 'easeOut' }}
-        style={{ width: '100%', maxWidth: 600, padding: 20 }}
-      >
-        
-        {/* Label */}
-        <label style={{ 
-          fontFamily: 'var(--font-marker)', fontSize: 32, display: 'block', marginBottom: 20, transform: 'rotate(-1deg)',
-          ...outlineStyle 
-        }}>
-          {step === 'topic' ? 'What do you want to explain?' : `Explain ${topic}`}
-        </label>
+      {/* Dot-grid */}
+      <div aria-hidden="true" style={{
+        position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0,
+        backgroundImage: 'radial-gradient(circle, #d4d4d4 1px, transparent 1px)',
+        backgroundSize: '28px 28px', opacity: 0.35,
+      }} />
 
-        {/* Input */}
-        <div style={{ position: 'relative', marginBottom: 32 }}>
-          {step === 'topic' ? (
-            <input
-              value={topic}
-              onChange={(e) => setTopic(e.target.value)}
-              onKeyDown={(e) => { if (e.key === 'Enter' && isTopicReady) handleNextStep(); }}
-              placeholder="e.g., Quantum Computing, React Hooks..."
-              disabled={isLoading}
-              style={{
-                width: '100%', padding: '24px',
-                backgroundColor: 'rgba(245,240,232,0.04)',
-                border: '2px dashed rgba(245,240,232,0.2)', borderRadius: 20,
-                color: '#ffffff', outline: 'none', fontSize: 18,
-                fontFamily: 'inherit', boxSizing: 'border-box'
-              }}
-            />
-          ) : (
-            <>
-              <textarea
-                value={explanation}
-                onChange={(e) => setExplanation(e.target.value)}
-                placeholder={`Start explaining ${topic} here. Think out loud...`}
+      <div style={{
+        position: 'relative', zIndex: 1,
+        flex: 1, display: 'flex', flexDirection: 'column',
+        alignItems: 'center', justifyContent: 'center',
+        padding: '100px 20px 60px',
+      }}>
+
+        {/* Back button */}
+        <button
+          onClick={() => step === 'explain' ? setStep('topic') : router.push('/')}
+          style={{
+            position: 'absolute', top: '88px', left: '24px',
+            display: 'flex', alignItems: 'center', gap: '6px',
+            background: 'none', border: 'none', cursor: 'pointer',
+            fontSize: '0.875rem', fontWeight: 600, color: '#555555',
+            transition: 'color 0.2s', fontFamily: 'inherit',
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.color = '#111111')}
+          onMouseLeave={(e) => (e.currentTarget.style.color = '#555555')}
+        >
+          <ArrowLeft size={16} /> Back
+        </button>
+
+        <motion.div
+          key={step}
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: 'easeOut' }}
+          style={{ width: '100%', maxWidth: '600px' }}
+        >
+
+
+          {/* Topic badge — only on explain step */}
+          {step === 'explain' && (
+            <span style={{
+              display: 'inline-flex', alignItems: 'center', gap: '4px',
+              fontSize: '0.6875rem', fontWeight: 700,
+              textTransform: 'uppercase', letterSpacing: '0.08em',
+              color: '#f97316',
+              border: '1px solid rgba(249,115,22,0.25)',
+              backgroundColor: 'rgba(249,115,22,0.06)',
+              padding: '4px 12px', borderRadius: '9999px',
+              marginBottom: '10px',
+            }}>
+              • {topic}
+            </span>
+          )}
+
+          {/* Label */}
+          <h1 style={{
+            fontSize: 'clamp(1.6rem, 4vw, 2.25rem)',
+            fontWeight: 800, lineHeight: 1.2,
+            color: '#111111', marginBottom: '8px',
+          }}>
+            {step === 'topic' ? 'What do you want to learn?' : `Explain "${topic}"`}
+          </h1>
+          <p style={{ fontSize: '0.9375rem', color: '#555555', marginBottom: '28px', lineHeight: 1.6 }}>
+            {step === 'topic'
+              ? 'Enter any topic — a concept, theory, or skill you want to master.'
+              : 'Write everything you know in your own words. Think out loud.'}
+          </p>
+
+          {/* Input area */}
+          <div style={{ position: 'relative', marginBottom: '24px' }}>
+            {step === 'topic' ? (
+              <input
+                id="topic-input"
+                value={topic}
+                onChange={(e) => setTopic(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter' && isTopicReady) handleNextStep(); }}
+                placeholder="e.g., Attention Mechanism, React Hooks, Photosynthesis…"
                 disabled={isLoading}
+                autoFocus
                 style={{
-                  width: '100%', minHeight: 240, padding: '24px 24px 48px 24px',
-                  backgroundColor: 'rgba(245,240,232,0.04)',
-                  border: '2px dashed rgba(245,240,232,0.2)', borderRadius: 20,
-                  color: '#ffffff', outline: 'none', fontSize: 18, lineHeight: 1.6,
-                  fontFamily: 'inherit', resize: 'none', boxSizing: 'border-box'
+                  width: '100%', padding: '16px 20px',
+                  backgroundColor: '#ffffff',
+                  border: '1.5px solid #e5e5e5',
+                  borderRadius: '12px',
+                  color: '#111111', fontSize: '1rem',
+                  fontFamily: 'inherit', boxSizing: 'border-box',
+                  outline: 'none', transition: 'border-color 0.2s',
                 }}
+                onFocus={(e) => (e.target.style.borderColor = '#111111')}
+                onBlur={(e) => (e.target.style.borderColor = '#e5e5e5')}
               />
-              <div style={{ position: 'absolute', bottom: 16, right: 24, fontSize: 14, fontWeight: 700, color: 'rgba(245,240,232,0.4)' }}>
-                {words} word{words !== 1 ? 's' : ''}
-              </div>
-            </>
-          )}
-        </div>
-
-        {/* Depth Selector - Only show on topic step */}
-        {step === 'topic' && (
-          <div style={{ marginBottom: 40 }}>
-            <div style={{ display: 'flex', gap: 12 }}>
-              {(['beginner', 'intermediate', 'advanced'] as const).map((level) => {
-                const isActive = depthLevel === level;
-                return (
-                  <motion.button 
-                    key={level} 
-                    onClick={() => setDepthLevel(level)}
-                    whileHover={!isActive ? { scale: 1.02, backgroundColor: 'rgba(245, 240, 232, 0.05)' } : {}} 
-                    whileTap={{ scale: 0.98 }}
-                    style={{
-                      flex: 1, padding: '14px 0', borderRadius: 16, fontWeight: 800, fontSize: 15, cursor: 'pointer', fontFamily: 'inherit',
-                      backgroundColor: isActive ? 'rgba(255,138,128,0.05)' : 'rgba(0,0,0,0)',
-                      color: isActive ? '#ff8a80' : 'rgba(245, 240, 232, 0.4)',
-                      border: isActive ? '2px dashed #ff8a80' : '2px dashed rgba(245, 240, 232, 0.2)',
-                      transition: 'all 0.2s', textTransform: 'capitalize'
-                    }}
-                  >
-                    {level}
-                  </motion.button>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* Error */}
-        <AnimatePresence>
-          {error && (
-            <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-              style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '14px 16px', borderRadius: 12, backgroundColor: 'rgba(255, 138, 128, 0.05)', border: '2px solid rgba(255, 138, 128, 0.2)', color: '#ff8a80', fontSize: 14, fontWeight: 600, marginBottom: 24 }}>
-              <AlertCircle size={18} style={{ marginTop: 2, flexShrink: 0 }} />
-              {error}
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Submit Button */}
-        {step === 'topic' ? (
-          <motion.button 
-            onClick={handleNextStep} 
-            disabled={!isTopicReady}
-            whileHover={isTopicReady ? { scale: 1.02, backgroundColor: 'rgba(255,138,128,0.1)' } : {}}
-            whileTap={isTopicReady ? { scale: 0.98 } : {}}
-            style={{
-              width: '100%', padding: '18px 0', borderRadius: 16, fontWeight: 800, fontSize: 18,
-              border: isTopicReady ? '2px dashed #ff8a80' : '2px dashed rgba(245,240,232,0.1)',
-              cursor: isTopicReady ? 'pointer' : 'not-allowed', fontFamily: 'inherit',
-              backgroundColor: 'rgba(0,0,0,0)',
-              color: isTopicReady ? '#ff8a80' : 'rgba(245,240,232,0.3)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, transition: 'all 0.2s'
-            }}
-          >
-            Pick up the chalk <ChevronRight size={20} />
-          </motion.button>
-        ) : (
-          <motion.button 
-            onClick={handleSubmit} 
-            disabled={!isExplainReady}
-            whileHover={isExplainReady ? { scale: 1.02, backgroundColor: 'rgba(255,138,128,0.1)' } : {}}
-            whileTap={isExplainReady ? { scale: 0.98 } : {}}
-            style={{
-              width: '100%', padding: '18px 0', borderRadius: 16, fontWeight: 800, fontSize: 18,
-              border: isExplainReady ? '2px dashed #ff8a80' : '2px dashed rgba(245,240,232,0.1)',
-              cursor: isExplainReady ? 'pointer' : 'not-allowed', fontFamily: 'inherit',
-              backgroundColor: 'rgba(0,0,0,0)',
-              color: isExplainReady ? '#ff8a80' : 'rgba(245,240,232,0.3)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, transition: 'all 0.2s'
-            }}
-          >
-            {isLoading ? (
-              <>
-                <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}>
-                  <Sparkles size={18} />
-                </motion.div>
-                Reading your thoughts…
-              </>
             ) : (
-              <>Analyze My Understanding <ChevronRight size={20} /></>
+              <>
+                <textarea
+                  id="explanation-input"
+                  value={explanation}
+                  onChange={(e) => setExplanation(e.target.value)}
+                  placeholder={`Start explaining ${topic} in your own words. Pretend you're teaching it to a friend…`}
+                  disabled={isLoading}
+                  autoFocus
+                  style={{
+                    width: '100%', minHeight: '220px', padding: '16px 20px 48px',
+                    backgroundColor: '#ffffff',
+                    border: '1.5px solid #e5e5e5',
+                    borderRadius: '12px',
+                    color: '#111111', fontSize: '1rem', lineHeight: 1.7,
+                    fontFamily: 'inherit', resize: 'none', boxSizing: 'border-box',
+                    outline: 'none', transition: 'border-color 0.2s',
+                  }}
+                  onFocus={(e) => (e.target.style.borderColor = '#111111')}
+                  onBlur={(e) => (e.target.style.borderColor = '#e5e5e5')}
+                />
+                <div style={{
+                  position: 'absolute', bottom: '14px', right: '16px',
+                  fontSize: '12px', fontWeight: 600,
+                  color: words >= 60 ? '#16a34a' : words >= 30 ? '#f97316' : '#aaaaaa',
+                }}>
+                  {words} word{words !== 1 ? 's' : ''}{' '}
+                  {words < 30 ? '(aim for 30+)' : words < 60 ? '(good, keep going)' : '(great!)'}
+                </div>
+              </>
             )}
-          </motion.button>
-        )}
+          </div>
 
-      </motion.div>
+          {/* Feynman tip card — only on explain step */}
+          {step === 'explain' && (
+            <div style={{
+              width: '100%',
+              backgroundColor: '#f9f9f9',
+              border: '1px solid #f0f0f0',
+              borderRadius: '12px',
+              padding: '16px 20px',
+              marginBottom: '20px',
+            }}>
+              <p style={{ fontSize: '0.6875rem', fontWeight: 700, color: '#aaaaaa', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '4px' }}>Feynman Tip</p>
+              <p style={{ fontSize: '0.875rem', color: '#555555', lineHeight: 1.65 }}>
+                Don&apos;t aim for perfection. Gaps in your explanation reveal gaps in your understanding — and that&apos;s exactly what we&apos;re here to fix.
+              </p>
+            </div>
+          )}
+
+          {/* Depth selector */}
+          {step === 'topic' && (
+            <div style={{ marginBottom: '28px' }}>
+              <p style={{ fontSize: '0.8125rem', fontWeight: 600, color: '#555555', marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                Your level
+              </p>
+              <div style={{ display: 'flex', gap: '10px' }}>
+                {DEPTH_LEVELS.map(({ value, label }) => {
+                  const isActive = depthLevel === value;
+                  return (
+                    <button
+                      key={value}
+                      id={`depth-${value}`}
+                      onClick={() => setDepthLevel(value)}
+                      style={{
+                        flex: 1, padding: '10px 8px', borderRadius: '9999px',
+                        fontSize: '0.8125rem', fontWeight: 700, cursor: 'pointer',
+                        fontFamily: 'inherit', transition: 'all 0.2s',
+                        backgroundColor: isActive ? '#111111' : '#ffffff',
+                        color: isActive ? '#ffffff' : '#555555',
+                        border: isActive ? '1.5px solid #111111' : '1.5px solid #e5e5e5',
+                      }}
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Error */}
+          <AnimatePresence>
+            {error && (
+              <motion.div
+                initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                style={{
+                  display: 'flex', alignItems: 'flex-start', gap: '10px',
+                  padding: '12px 16px', borderRadius: '10px', marginBottom: '20px',
+                  backgroundColor: 'rgba(239,68,68,0.05)',
+                  border: '1px solid rgba(239,68,68,0.2)',
+                  color: '#dc2626', fontSize: '0.875rem', fontWeight: 600,
+                }}
+              >
+                <AlertCircle size={16} style={{ marginTop: '2px', flexShrink: 0 }} />
+                {error}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* CTA button */}
+          {step === 'topic' ? (
+            <button
+              id="next-step-btn"
+              onClick={handleNextStep}
+              disabled={!isTopicReady}
+              style={{
+                width: '100%', padding: '14px 0',
+                borderRadius: '9999px', fontWeight: 700, fontSize: '0.9375rem',
+                border: 'none', cursor: isTopicReady ? 'pointer' : 'not-allowed',
+                fontFamily: 'inherit',
+                backgroundColor: isTopicReady ? '#111111' : '#e5e5e5',
+                color: isTopicReady ? '#ffffff' : '#999999',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                transition: 'all 0.2s',
+              }}
+              onMouseEnter={(e) => { if (isTopicReady) e.currentTarget.style.backgroundColor = '#f97316'; }}
+              onMouseLeave={(e) => { if (isTopicReady) e.currentTarget.style.backgroundColor = '#111111'; }}
+            >
+              Continue <ChevronRight size={18} />
+            </button>
+          ) : (
+            <button
+              id="analyze-btn"
+              onClick={handleSubmit}
+              disabled={!isExplainReady}
+              style={{
+                width: '100%', padding: '14px 0',
+                borderRadius: '9999px', fontWeight: 700, fontSize: '0.9375rem',
+                border: 'none', cursor: isExplainReady ? 'pointer' : 'not-allowed',
+                fontFamily: 'inherit',
+                backgroundColor: isExplainReady ? '#111111' : '#e5e5e5',
+                color: isExplainReady ? '#ffffff' : '#999999',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                transition: 'all 0.2s',
+              }}
+              onMouseEnter={(e) => { if (isExplainReady) e.currentTarget.style.backgroundColor = '#f97316'; }}
+              onMouseLeave={(e) => { if (isExplainReady) e.currentTarget.style.backgroundColor = '#111111'; }}
+            >
+              {isLoading ? (
+                <>
+                  <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}>
+                    <Sparkles size={16} />
+                  </motion.div>
+                  Analyzing your understanding…
+                </>
+              ) : (
+                <>Analyze My Understanding <ChevronRight size={18} /></>
+              )}
+            </button>
+          )}
+        </motion.div>
+      </div>
     </div>
   );
 }
