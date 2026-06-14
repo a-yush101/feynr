@@ -3,7 +3,7 @@
   <h1>Feynr — Learn by Explaining</h1>
   <p><em>"The best way to learn is to teach."</em></p>
   <p>
-    <a href="#[demo-video](https://youtu.be/WPgsAt4Orqk)"><strong>Watch Video</strong></a>
+    <a href="(https://youtu.be/WPgsAt4Orqk)"><strong>Watch Video</strong></a>
   </p>
 </div>
 
