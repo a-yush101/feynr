@@ -30,7 +30,12 @@ export default function ExplainPage() {
   const isExplainReady = words >= 30 && !isLoading;
   const isTopicReady = topic.trim().length > 0;
 
-  const handleNextStep = () => { if (isTopicReady) setStep('explain'); };
+  const handleNextStep = () => {
+    if (isTopicReady) {
+      setStep('explain');
+      router.replace('/explain?s=2', { scroll: false });
+    }
+  };
 
   const handleSubmit = async () => {
     if (!isExplainReady) return;
@@ -94,7 +99,14 @@ export default function ExplainPage() {
 
         {/* Back button */}
         <button
-          onClick={() => step === 'explain' ? setStep('topic') : router.push('/')}
+          onClick={() => {
+            if (step === 'explain') {
+              setStep('topic');
+              router.replace('/explain', { scroll: false });
+            } else {
+              router.push('/');
+            }
+          }}
           style={{
             position: 'absolute', top: '88px', left: '24px',
             display: 'flex', alignItems: 'center', gap: '6px',

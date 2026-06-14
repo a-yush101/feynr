@@ -161,12 +161,12 @@ export default function HeroSection() {
             }}
           >
             <div>
-              <span style={{ fontSize: '1.25rem', fontWeight: 800, color: '#111111', display: 'block' }}>2,400+</span>
-              <p style={{ fontSize: '0.75rem', color: '#555555', marginTop: '2px' }}>active learners</p>
+              <span style={{ fontSize: '1.25rem', fontWeight: 800, color: '#111111', display: 'block' }}>6 Stage</span>
+              <p style={{ fontSize: '0.75rem', color: '#555555', marginTop: '2px' }}>AI reasoning pipeline</p>
             </div>
             <div>
-              <span style={{ fontSize: '1.25rem', fontWeight: 800, color: '#111111', display: 'block' }}>94%</span>
-              <p style={{ fontSize: '0.75rem', color: '#555555', marginTop: '2px' }}>avg retention rate</p>
+              <span style={{ fontSize: '1.25rem', fontWeight: 800, color: '#111111', display: 'block' }}>4 Dimensions</span>
+              <p style={{ fontSize: '0.75rem', color: '#555555', marginTop: '2px' }}>of understanding scored</p>
             </div>
             <div>
               <span style={{ fontSize: '1.25rem', fontWeight: 800, color: '#f97316', display: 'block' }}>Feynman</span>
